@@ -1,5 +1,5 @@
-import 'package:easyfarm/app/theme.dart';
-import 'package:easyfarm/app_router.dart';
+import 'package:myapp/app/theme.dart';
+import 'package:myapp/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
-      title: 'EasyFarm',
+      title: 'MyApp',
       theme: themeData,
     );
   }

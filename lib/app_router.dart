@@ -1,7 +1,9 @@
-import 'package:easyfarm/features/authentication/screens/auth_wrapper.dart';
-import 'package:easyfarm/features/authentication/screens/login_screen.dart';
-import 'package:easyfarm/features/authentication/screens/signup_screen.dart';
-import 'package:easyfarm/features/authentication/screens/welcome_screen.dart';
+import 'package:myapp/features/authentication/screens/auth_wrapper.dart';
+import 'package:myapp/features/authentication/screens/login_screen.dart';
+import 'package:myapp/features/authentication/screens/signup_screen.dart';
+import 'package:myapp/features/authentication/screens/welcome_screen.dart';
+import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
+import 'package:myapp/features/home/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,6 +19,18 @@ final GoRouter router = GoRouter(
             path: 'welcome',
             builder: (BuildContext context, GoRouterState state) {
               return const WelcomeScreen();
+            },
+          ),
+          GoRoute(
+            path: 'home',
+            builder: (BuildContext context, GoRouterState state) {
+              return const HomePage();
+            },
+          ),
+          GoRoute(
+            path: 'add-equipment',
+            builder: (BuildContext context, GoRouterState state) {
+              return const AddEquipmentPage();
             },
           ),
         ]),

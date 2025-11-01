@@ -8,14 +8,14 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome to EasyFarm'),
+        title: const Text('Welcome to MyApp'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Welcome to EasyFarm!',
+              'Welcome to MyApp!',
             ),
             ElevatedButton(
               onPressed: () {

@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('EasyFarm', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
+        title: Text('MyApp', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(

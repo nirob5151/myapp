@@ -1,4 +1,4 @@
-import 'package:easyfarm/features/authentication/services/auth_service.dart';
+import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
