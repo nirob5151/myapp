@@ -75,7 +75,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implement navigation to an 'add equipment' page.
+          context.go('/add-equipment');
         },
         child: const Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,

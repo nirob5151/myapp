@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/pages/signup_page.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
+import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 
 class AppRouter {
@@ -30,6 +31,12 @@ class AppRouter {
         path: '/signup',
         builder: (BuildContext context, GoRouterState state) {
           return const SignUpPage();
+        },
+      ),
+      GoRoute(
+        path: '/add-equipment',
+        builder: (BuildContext context, GoRouterState state) {
+          return const AddEquipmentPage();
         },
       ),
     ],

@@ -41,14 +41,20 @@ EasyFarm is a mobile platform that connects farmers with agricultural equipment 
 *   **Notifications:** Firebase Cloud Messaging (FCM)
 *   **Maps & Location:** Google Maps Platform
 
+## Completed Features
+
+*   **Core Structure Refactoring:**
+    *   Removed the previous "farm and crop management" feature.
+    *   Deleted the `farm_management` directory, including its models, services, and UI pages.
+    *   Updated routing and dependency injection.
+*   **Equipment Marketplace:**
+    *   Created the foundation for browsing and listing equipment.
+    *   Implemented the `Equipment` model and `EquipmentService`.
+    *   The home page now displays a list of available equipment from Firestore.
+    *   Users can add new equipment with an image to the marketplace.
+
 ## Current Implementation Plan
 
-*   **Phase 1: Core Structure Refactoring**
-    *   **Action:** Remove the previous "farm and crop management" feature.
-    *   **Details:** This involves deleting the `farm_management` directory, including its models, services, and UI pages. The routing and dependency injection will be updated accordingly.
-*   **Phase 2: Implement Equipment Marketplace**
-    *   **Action:** Create the foundation for browsing and listing equipment.
-    *   **Details:** A new `Equipment` model and `EquipmentService` will be created. The home page will be redesigned to display a list of available equipment from Firestore.
 *   **Phase 3: User Roles & Listings**
     *   **Action:** Introduce the concept of "Owner" and "Farmer" roles.
     *   **Details:** Update the authentication and user profile system to handle different user types. Owners will get the functionality to list and manage their equipment.
