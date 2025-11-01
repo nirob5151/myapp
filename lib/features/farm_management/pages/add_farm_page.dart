@@ -8,10 +8,10 @@ class AddFarmPage extends StatefulWidget {
   const AddFarmPage({super.key});
 
   @override
-  _AddFarmPageState createState() => _AddFarmPageState();
+  AddFarmPageState createState() => AddFarmPageState();
 }
 
-class _AddFarmPageState extends State<AddFarmPage> {
+class AddFarmPageState extends State<AddFarmPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _location = '';

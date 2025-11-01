@@ -7,17 +7,15 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-
     return Scaffold(
       backgroundColor: Colors.green.shade50,
       appBar: AppBar(
@@ -75,11 +73,13 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: () async {
+                final authService = context.read<AuthService>();
                 final user = await authService.signInWithPhoneAndPassword(
                   _phoneController.text,
                   _passwordController.text,
                 );
                 if (user != null) {
+                  if (!context.mounted) return;
                   context.go('/home');
                 }
               },
@@ -100,8 +100,10 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 16.0),
             OutlinedButton(
               onPressed: () async {
+                final authService = context.read<AuthService>();
                 final user = await authService.signInWithGoogle();
                 if (user != null) {
+                  if (!context.mounted) return;
                   context.go('/home');
                 }
               },

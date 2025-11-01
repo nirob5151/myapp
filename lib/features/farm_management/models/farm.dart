@@ -1,26 +1,37 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myapp/features/farm_management/models/crop.dart';
 
-part 'farm.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class Farm {
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String? id;
-
+  final String? id;
   final String name;
   final String location;
-  final List<Crop> crops;
   final String ownerId;
+  final List<String> crops;
 
-  Farm({this.id, required this.name, required this.location, required this.crops, required this.ownerId});
+  Farm({
+    this.id,
+    required this.name,
+    required this.location,
+    required this.ownerId,
+    this.crops = const [],
+  });
 
-  factory Farm.fromFirestore(DocumentSnapshot doc) {
-    return Farm.fromJson(doc.data() as Map<String, dynamic>)..id = doc.id;
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'location': location,
+      'ownerId': ownerId,
+      'crops': crops,
+    };
   }
 
-  factory Farm.fromJson(Map<String, dynamic> json) => _$FarmFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FarmToJson(this);
+  factory Farm.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return Farm(
+      id: doc.id,
+      name: data['name'] ?? '',
+      location: data['location'] ?? '',
+      ownerId: data['ownerId'] ?? '',
+      crops: List<String>.from(data['crops'] ?? []),
+    );
+  }
 }

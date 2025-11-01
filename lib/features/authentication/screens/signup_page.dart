@@ -7,10 +7,10 @@ class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  _SignupPageState createState() => _SignupPageState();
+  SignupPageState createState() => SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class SignupPageState extends State<SignupPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -19,8 +19,6 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-
     return Scaffold(
       backgroundColor: Colors.green.shade50,
       appBar: AppBar(
@@ -109,6 +107,7 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: () async {
+                final authService = context.read<AuthService>();
                 final user = await authService.signUp(
                   _nameController.text,
                   _emailController.text,
@@ -117,6 +116,7 @@ class _SignupPageState extends State<SignupPage> {
                   _phoneController.text,
                 );
                 if (user != null) {
+                  if (!context.mounted) return;
                   context.go('/');
                 }
               },
@@ -137,8 +137,10 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 16.0),
             OutlinedButton(
               onPressed: () async {
+                final authService = context.read<AuthService>();
                 final user = await authService.signInWithGoogle();
                 if (user != null) {
+                  if (!context.mounted) return;
                   context.go('/home');
                 }
               },
