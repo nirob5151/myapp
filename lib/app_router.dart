@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/features/authentication/pages/login_page.dart';
+import 'package:myapp/features/authentication/screens/login_screen.dart';
 import 'package:myapp/features/authentication/screens/signup_screen.dart';
+import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
@@ -11,18 +12,18 @@ import 'package:myapp/go_router_refresh_stream.dart';
 class AppRouter {
   static final router = GoRouter(
     refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
-    initialLocation: '/login',
+    initialLocation: '/',
     routes: <RouteBase>[
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
+          return const WelcomeScreen();
         },
       ),
       GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
+          return const LoginScreen();
         },
       ),
       GoRoute(
@@ -62,7 +63,7 @@ class AppRouter {
       }
 
       if (loggedIn && loggingIn) {
-        return '/home';
+        return '/';
       }
 
       return null;
