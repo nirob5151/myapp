@@ -50,6 +50,7 @@ It helps small and medium-scale farmers access modern tools without large upfron
     *   Users can sign up and log in with their email and password.
     *   Users can choose between two roles: "Farmer" and "Owner".
     *   The user's role is stored in Firestore.
+    *   The sign-up screen now uses `ChoiceChip` widgets for a modern and accessible role selection.
 *   **Equipment:**
     *   A list of equipment is displayed on the home page.
     *   Users with the "Owner" role can add new equipment with a name, description, price, and image.
@@ -58,6 +59,9 @@ It helps small and medium-scale farmers access modern tools without large upfron
     *   The app has a basic theme with a primary color.
     *   The home page displays a list of equipment in a card format.
     *   The "add equipment" page provides a form for owners to add new equipment.
+*   **Code Quality:**
+    *   All analyzer warnings and deprecation issues have been resolved.
+    *   The codebase is clean and follows best practices.
 
 ## Next Steps:
 

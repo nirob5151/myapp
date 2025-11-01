@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/app_router.dart';
 import 'package:myapp/firebase_options.dart';
+import 'package:provider/provider.dart';
+
+import 'features/authentication/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +19,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Easy Farm',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(),
+        ),
+      ],
+      child: MaterialApp.router(
+        title: 'Easy Farm',
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        routerConfig: AppRouter.router,
       ),
-      routerConfig: router,
     );
   }
 }

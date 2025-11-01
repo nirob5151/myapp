@@ -67,6 +67,9 @@ class HomePage extends StatelessWidget {
                   title: Text(equipment.name, style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
                   subtitle: Text(equipment.description),
                   trailing: Text('\$${equipment.price}/day', style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
+                  onTap: () {
+                    context.go('/home/equipment/${equipment.id}');
+                  },
                 ),
               );
             },

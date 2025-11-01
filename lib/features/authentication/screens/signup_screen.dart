@@ -85,26 +85,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 valueListenable: _selectedRole,
                 builder: (context, value, child) {
                   return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Farmer'),
-                          value: 'Farmer',
-                          groupValue: value,
-                          onChanged: (String? newValue) {
-                            _selectedRole.value = newValue!;
-                          },
-                        ),
+                      ChoiceChip(
+                        label: const Text('Farmer'),
+                        selected: value == 'Farmer',
+                        onSelected: (selected) {
+                          if (selected) {
+                            _selectedRole.value = 'Farmer';
+                          }
+                        },
                       ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('Owner'),
-                          value: 'Owner',
-                          groupValue: value,
-                          onChanged: (String? newValue) {
-                            _selectedRole.value = newValue!;
-                          },
-                        ),
+                      const SizedBox(width: 20),
+                      ChoiceChip(
+                        label: const Text('Owner'),
+                        selected: value == 'Owner',
+                        onSelected: (selected) {
+                          if (selected) {
+                            _selectedRole.value = 'Owner';
+                          }
+                        },
                       ),
                     ],
                   );
