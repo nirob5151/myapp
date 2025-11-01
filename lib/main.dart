@@ -24,38 +24,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome to EasyFarm'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Welcome to EasyFarm!',
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Navigate to Login Page
-              },
-              child: const Text('Login'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Navigate to Sign Up Page
-              },
-              child: const Text('Sign Up'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
