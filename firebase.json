@@ -1,1 +1,25 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"easyfarm-31bcd","appId":"1:125390613754:android:8a9c37ef3116ee9fdf6d43","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"easyfarm-31bcd","configurations":{"android":"1:125390613754:android:8a9c37ef3116ee9fdf6d43","web":"1:125390613754:web:73e121e998d02123df6d43"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "easyfarm-31bcd",
+          "appId": "1:125390613754:android:8a9c37ef3116ee9fdf6d43",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "easyfarm-31bcd",
+          "configurations": {
+            "android": "1:125390613754:android:8a9c37ef3116ee9fdf6d43",
+            "web": "1:125390613754:web:73e121e998d02123df6d43"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

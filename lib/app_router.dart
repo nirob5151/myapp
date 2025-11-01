@@ -10,30 +10,17 @@ import 'package:go_router/go_router.dart';
 final GoRouter router = GoRouter(
   routes: <GoRoute>[
     GoRoute(
-        path: '/',
-        builder: (BuildContext context, GoRouterState state) {
-          return const AuthWrapper();
-        },
-        routes: [
-          GoRoute(
-            path: 'welcome',
-            builder: (BuildContext context, GoRouterState state) {
-              return const WelcomeScreen();
-            },
-          ),
-          GoRoute(
-            path: 'home',
-            builder: (BuildContext context, GoRouterState state) {
-              return const HomePage();
-            },
-          ),
-          GoRoute(
-            path: 'add-equipment',
-            builder: (BuildContext context, GoRouterState state) {
-              return const AddEquipmentPage();
-            },
-          ),
-        ]),
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const AuthWrapper();
+      },
+    ),
+    GoRoute(
+      path: '/welcome',
+      builder: (BuildContext context, GoRouterState state) {
+        return const WelcomeScreen();
+      },
+    ),
     GoRoute(
       path: '/login',
       builder: (BuildContext context, GoRouterState state) {
@@ -44,6 +31,18 @@ final GoRouter router = GoRouter(
       path: '/signup',
       builder: (BuildContext context, GoRouterState state) {
         return const SignUpScreen();
+      },
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        return const HomePage();
+      },
+    ),
+    GoRoute(
+      path: '/add-equipment',
+      builder: (BuildContext context, GoRouterState state) {
+        return const AddEquipmentPage();
       },
     ),
   ],
