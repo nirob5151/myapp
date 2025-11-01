@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/farm_management/models/farm.dart';
+import 'package:myapp/features/farm_management/models/crop.dart';
 import 'package:myapp/features/farm_management/services/farm_service.dart';
 import 'package:provider/provider.dart';
 
@@ -30,24 +31,59 @@ class FarmManagementPage extends StatelessWidget {
       ),
       body: StreamBuilder<List<Farm>>(
         stream: farmsStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, farmSnapshot) {
+          if (farmSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          if (farmSnapshot.hasError) {
+            return Center(child: Text('Error: ${farmSnapshot.error}'));
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (!farmSnapshot.hasData || farmSnapshot.data!.isEmpty) {
             return const Center(child: Text('No farms found. Add one!'));
           }
-          final farms = snapshot.data!;
+          final farms = farmSnapshot.data!;
           return ListView.builder(
             itemCount: farms.length,
             itemBuilder: (context, index) {
               final farm = farms[index];
-              return ListTile(
-                title: Text(farm.name),
-                subtitle: Text(farm.location),
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: ExpansionTile(
+                  title: Text(farm.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(farm.location),
+                  children: [
+                    StreamBuilder<List<Crop>>(
+                      stream: farmService.getCrops(farm.id!),
+                      builder: (context, cropSnapshot) {
+                        if (cropSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (cropSnapshot.hasError) {
+                          return Center(child: Text('Error: ${cropSnapshot.error}'));
+                        }
+                        if (!cropSnapshot.hasData || cropSnapshot.data!.isEmpty) {
+                          return const Center(child: Text('No crops found.'));
+                        }
+                        final crops = cropSnapshot.data!;
+                        return Column(
+                          children: crops.map((crop) {
+                            return ListTile(
+                              title: Text(crop.name),
+                              subtitle: Text('Planted: ${crop.plantingDate}, Harvest: ${crop.harvestDate}'),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Correctly navigate to AddCropPage
+                        context.push('/add_crop', extra: farm.id);
+                      },
+                      child: const Text('Add Crop'),
+                    ),
+                  ],
+                ),
               );
             },
           );

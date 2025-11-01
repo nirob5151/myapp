@@ -6,6 +6,13 @@ EasyFarm is a mobile application designed to simplify farm management for farmer
 
 ## Implemented Features
 
+### Version 0.2
+
+*   **Crop Management:**
+    *   Users can add new crops with a name, planting date, and harvest date.
+    *   Crops are associated with a specific farm.
+    *   The list of crops is displayed under each farm on the farm management page.
+
 ### Version 0.1
 
 *   **Authentication:**
@@ -20,7 +27,7 @@ EasyFarm is a mobile application designed to simplify farm management for farmer
 
 ## Next Steps
 
-*   Implement the crop management feature, allowing users to add, edit, and delete crops associated with their farms.
+*   Implement the ability to edit and delete farms and crops.
 *   Enhance the UI of the farm management and crop management pages.
 *   Add a dashboard to the home page to display a summary of farm activities.
 *   Implement the educational resources feature, including articles and tutorials.

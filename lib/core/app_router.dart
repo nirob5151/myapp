@@ -7,6 +7,7 @@ import 'package:myapp/features/authentication/screens/welcome_page.dart';
 import 'package:myapp/features/home/screens/home_page.dart';
 import 'package:myapp/features/farm_management/pages/farm_management_page.dart';
 import 'package:myapp/features/farm_management/pages/add_farm_page.dart';
+import 'package:myapp/features/farm_management/pages/add_crop_page.dart';
 
 class AppRouter {
   final ValueNotifier<User?> authNotifier;
@@ -51,6 +52,13 @@ class AppRouter {
         path: '/add_farm',
         builder: (BuildContext context, GoRouterState state) {
           return const AddFarmPage();
+        },
+      ),
+      GoRoute(
+        path: '/add_crop',
+        builder: (BuildContext context, GoRouterState state) {
+          final farmId = state.extra as String;
+          return AddCropPage(farmId: farmId);
         },
       ),
     ],

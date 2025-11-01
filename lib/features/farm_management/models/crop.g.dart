@@ -7,11 +7,17 @@ part of 'crop.dart';
 // **************************************************************************
 
 Crop _$CropFromJson(Map<String, dynamic> json) => Crop(
+  id: json['id'] as String?,
   name: json['name'] as String,
-  plantingDate: _dateTimeFromTimestamp(json['plantingDate'] as Timestamp),
+  plantingDate: json['plantingDate'] as String,
+  harvestDate: json['harvestDate'] as String,
+  farmId: json['farmId'] as String,
 );
 
 Map<String, dynamic> _$CropToJson(Crop instance) => <String, dynamic>{
+  'id': instance.id,
   'name': instance.name,
-  'plantingDate': _dateTimeToTimestamp(instance.plantingDate),
+  'plantingDate': instance.plantingDate,
+  'harvestDate': instance.harvestDate,
+  'farmId': instance.farmId,
 };
