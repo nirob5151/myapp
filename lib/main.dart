@@ -53,7 +53,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
         routerConfig: router,
-        // home: WelcomePage(), // We use router, so home is not needed
       ),
     );
   }

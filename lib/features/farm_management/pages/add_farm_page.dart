@@ -60,8 +60,8 @@ class AddFarmPageState extends State<AddFarmPage> {
                     final farm = Farm(
                       name: _name,
                       location: _location,
-                      crops: [],
-                      ownerId: '',
+                      // Replace 'YOUR_OWNER_ID' with the actual owner ID
+                      ownerId: 'YOUR_OWNER_ID',
                     );
                     context.read<FarmService>().addFarm(farm);
                     Navigator.of(context).pop();

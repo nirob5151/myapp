@@ -1,11 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:myapp/features/authentication/screens/login_page.dart';
-import 'package:myapp/features/authentication/screens/signup_page.dart';
-import 'package:myapp/features/authentication/screens/welcome_page.dart';
-import 'package:myapp/features/home/screens/home_page.dart';
-import 'package:myapp/features/farm_management/screens/farm_management_page.dart';
+import 'package:myapp/features/authentication/pages/login_page.dart';
+import 'package:myapp/features/authentication/pages/signup_page.dart';
+import 'package:myapp/features/authentication/pages/welcome_page.dart';
+import 'package:myapp/features/home/pages/home_page.dart';
+import 'package:myapp/features/farm_management/pages/farm_management_page.dart';
+import 'package:myapp/features/farm_management/pages/add_farm_page.dart';
 
 class AppRouter {
   final ValueNotifier<User?> authNotifier;
@@ -44,6 +45,12 @@ class AppRouter {
         path: '/farm-management',
         builder: (BuildContext context, GoRouterState state) {
           return const FarmManagementPage();
+        },
+      ),
+      GoRoute(
+        path: '/add_farm',
+        builder: (BuildContext context, GoRouterState state) {
+          return const AddFarmPage();
         },
       ),
     ],
