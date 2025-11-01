@@ -22,7 +22,9 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await authService.signOut();
-              context.go('/login');
+              if (context.mounted) {
+                context.go('/login');
+              }
             },
           ),
         ],
