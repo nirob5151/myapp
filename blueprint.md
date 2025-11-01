@@ -49,7 +49,7 @@ It helps small and medium-scale farmers access modern tools without large upfron
 *   **Authentication:**
     *   Users can sign up and log in with their email and password.
     *   Users can choose between two roles: "Farmer" and "Owner".
-    *   The user's role is stored in Firestore.
+    *   The user's name and role are stored in Firestore.
     *   The sign-up screen now uses `ChoiceChip` widgets for a modern and accessible role selection.
 *   **Equipment:**
     *   A list of equipment is displayed on the home page.

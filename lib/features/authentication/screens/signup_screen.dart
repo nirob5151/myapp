@@ -12,6 +12,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final ValueNotifier<String> _selectedRole = ValueNotifier<String>('Farmer');
@@ -27,6 +28,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       final user = await authService.signUpWithEmailAndPassword(
+        _nameController.text,
         _emailController.text,
         _passwordController.text,
         _selectedRole.value,
@@ -53,6 +55,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           key: _formKey,
           child: Column(
             children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Full Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your full name';
+                  }
+                  return null;
+                },
+              ),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
