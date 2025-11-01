@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
@@ -7,7 +9,6 @@ import 'package:myapp/features/farm_management/pages/add_crop_page.dart';
 import 'package:myapp/features/farm_management/pages/add_farm_page.dart';
 import 'package:myapp/features/farm_management/pages/farm_management_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
-import 'package:provider/provider.dart';
 
 class AppRouter {
   final AuthService authService;
@@ -78,7 +79,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
     _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
   }
 
-  late final Stream<dynamic> _subscription;
+  late final StreamSubscription<dynamic> _subscription;
 
   @override
   void dispose() {
