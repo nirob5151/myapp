@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/farm_management/services/farm_service.dart';
-import 'package:myapp/core/app_router.dart';
 import 'package:myapp/firebase_options.dart';
 
 void main() async {
@@ -32,13 +32,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _authService = AuthService();
-    final authNotifier = ValueNotifier<User?>(_authService.currentUser);
-
-    _authService.authStateChanges.listen((user) {
-      authNotifier.value = user;
-    });
-
-    _appRouter = AppRouter(authNotifier);
+    _appRouter = AppRouter(authService: _authService);
   }
 
   @override
