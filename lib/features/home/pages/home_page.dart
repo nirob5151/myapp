@@ -12,13 +12,18 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final user = authService.currentUser;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('MyApp', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.pets),
+            onPressed: () {
+              context.go('/pet-friendly');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {

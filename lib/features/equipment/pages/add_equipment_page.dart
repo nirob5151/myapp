@@ -46,7 +46,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   void _submitForm() async {
     if (_formKey.currentState!.validate() && _image != null) {
       final authService = Provider.of<AuthService>(context, listen: false);
-      final user = authService.currentUser;
+      final user = await authService.authStateChanges.first;
 
       if (user != null) {
         final imageUrl = await _uploadImage(_image!);
