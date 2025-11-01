@@ -12,12 +12,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _selectedRole = 'Farmer';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('EasyFarm Signup'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -47,12 +48,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
               ),
               const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RadioListTile<String>(
+                    title: const Text('Farmer'),
+                    value: 'Farmer',
+                    groupValue: _selectedRole,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRole = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('Owner'),
+                    value: 'Owner',
+                    groupValue: _selectedRole,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedRole = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     AuthService().signUpWithEmailAndPassword(
                       _emailController.text,
                       _passwordController.text,
+                      _selectedRole,
                     );
                   }
                 },

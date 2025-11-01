@@ -1,19 +1,19 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class AddEquipmentPage extends StatefulWidget {
   const AddEquipmentPage({super.key});
 
   @override
-  _AddEquipmentPageState createState() => _AddEquipmentPageState();
+  State<AddEquipmentPage> createState() => _AddEquipmentPageState();
 }
 
 class _AddEquipmentPageState extends State<AddEquipmentPage> {
@@ -21,12 +21,10 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
-
   File? _image;
-  final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -39,85 +37,87 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
         .ref()
         .child('equipment_images')
         .child('${DateTime.now().toIso8601String()}.jpg');
-    await storageRef.putFile(image);
-    return await storageRef.getDownloadURL();
-  }
-
-  void _submitForm() async {
-    if (_formKey.currentState!.validate() && _image != null) {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final user = await authService.authStateChanges.first;
-
-      if (user != null) {
-        final imageUrl = await _uploadImage(_image!);
-        final newEquipment = Equipment(
-          id: '', // Firestore will generate the ID
-          name: _nameController.text,
-          description: _descriptionController.text,
-          price: double.parse(_priceController.text),
-          imageUrl: imageUrl,
-          ownerId: user.uid,
-          availableDates: [],
-        );
-
-        final equipmentService = Provider.of<EquipmentService>(context, listen: false);
-        await equipmentService.addEquipment(newEquipment);
-
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-      }
-    }
+    final uploadTask = storageRef.putFile(image);
+    final snapshot = await uploadTask.whenComplete(() {});
+    return await snapshot.ref.getDownloadURL();
   }
 
   @override
   Widget build(BuildContext context) {
+    final equipmentService = Provider.of<EquipmentService>(context, listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Equipment', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text('Add Equipment'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Equipment Name'),
-                validator: (value) => value!.isEmpty ? 'Please enter a name' : null,
+                decoration: const InputDecoration(labelText: 'Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the equipment name';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the equipment description';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price per Day'),
+                decoration: const InputDecoration(labelText: 'Price per day'),
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? 'Please enter a price' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the price per day';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 24),
-              _image == null
-                  ? OutlinedButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.image),
-                      label: const Text('Select Image'),
-                    )
-                  : Image.file(_image!),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
+              _image != null
+                  ? Image.file(_image!, height: 100)
+                  : const Text('No image selected'),
               ElevatedButton(
-                onPressed: _submitForm,
+                onPressed: _pickImage,
+                child: const Text('Pick Image'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate() && _image != null && user != null) {
+                    final imageUrl = await _uploadImage(_image!);
+                    final newEquipment = Equipment(
+                      id: '',
+                      name: _nameController.text,
+                      description: _descriptionController.text,
+                      price: double.parse(_priceController.text),
+                      imageUrl: imageUrl,
+                      ownerId: user.uid,
+                      availableDates: [],
+                    );
+                    await equipmentService.addEquipment(newEquipment);
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                  }
+                },
                 child: const Text('Add Equipment'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
               ),
             ],
           ),

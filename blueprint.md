@@ -1,26 +1,72 @@
 # Project Blueprint
 
-## Overview
+## App Name: EasyFarm — Smart Equipment Rentals
 
-This is a travel app that helps users plan and book their trips. The app allows users to search for flights, hotels, and rental cars. Users can also create a travel itinerary and share it with their friends and family.
+## App Concept:
+EasyFarm is a mobile platform that connects farmers with agricultural equipment owners for renting or leasing farm machinery such as tractors, harvesters, irrigation pumps, and more.
+It helps small and medium-scale farmers access modern tools without large upfront costs, while owners earn by renting out their idle equipment.
 
-## Style and Design
+## Key Features:
 
-The app uses a modern and clean design. The color palette is based on a deep purple, with a white background. The typography is based on the Oswald and Roboto fonts. The app uses Material Design 3 components.
+### For Farmers:
 
-## Features
+*   Browse equipment (tractors, harvesters, pumps, etc.) by location, price, and availability
+*   View equipment details (specs, photos, rent rate, owner info)
+*   Book equipment and contact owners (call/message)
+*   Track active and past rentals
 
-- User authentication (email/password and Google Sign-In)
-- Flight search
-- Hotel search
-- Rental car search
-- Travel itinerary
-- User profile
+### For Owners:
 
-## Current Task: Pet-Friendly Feature
+*   Post equipment with photos, description, price, and availability
+*   Manage listings (edit, pause, delete)
+*   Accept or reject booking requests
+*   Track payments and rental history
 
-I will be adding a new "Pet-Friendly" feature to the app. This feature will allow users to search for pet-friendly hotels and book a stay. The feature will include the following:
+### Common Features:
 
-- A list of pet-friendly hotels
-- A map view of the hotels
-- The ability to book a stay
+*   Login/Signup (Farmer or Owner)
+*   Profile and settings management
+*   Reviews and ratings system
+*   Notifications for booking updates and payments
+
+## Unique Selling Points (USP):
+
+*   Localized support (Bangla + English)
+*   Location-based equipment suggestions
+*   Built-in payment tracking and rental calendar
+*   Promotes shared resource usage (eco-friendly farming)
+
+## Tech Stack Suggestion:
+
+*   **Frontend:** Flutter
+*   **Backend:** Firebase
+*   **Database:** Firestore
+*   **Map Integration:** Google Maps API
+*   **Notifications:** Firebase Cloud Messaging (FCM)
+
+## Current Implementation:
+
+*   **Authentication:**
+    *   Users can sign up and log in with their email and password.
+    *   Users can choose between two roles: "Farmer" and "Owner".
+    *   The user's role is stored in Firestore.
+*   **Equipment:**
+    *   A list of equipment is displayed on the home page.
+    *   Users with the "Owner" role can add new equipment with a name, description, price, and image.
+    *   Equipment data is stored in Firestore, and images are stored in Firebase Storage.
+*   **UI:**
+    *   The app has a basic theme with a primary color.
+    *   The home page displays a list of equipment in a card format.
+    *   The "add equipment" page provides a form for owners to add new equipment.
+
+## Next Steps:
+
+*   **Equipment Details:**
+    *   Implement a details page for each piece of equipment.
+    *   Display all the equipment information, including the owner's details.
+*   **Booking:**
+    *   Allow farmers to book equipment for specific dates.
+    *   Implement a booking system to manage equipment availability.
+*   **User Profiles:**
+    *   Create a profile page for users to view and edit their information.
+    *   Display the user's rental history.

@@ -6,7 +6,6 @@ import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/pet_friendly_screen.dart';
 
 final GoRouter router = GoRouter(
   routes: <GoRoute>[
@@ -45,12 +44,6 @@ final GoRouter router = GoRouter(
       path: '/signup',
       builder: (BuildContext context, GoRouterState state) {
         return const SignUpScreen();
-      },
-    ),
-    GoRoute(
-      path: '/pet-friendly',
-      builder: (BuildContext context, GoRouterState state) {
-        return const PetFriendlyScreen();
       },
     ),
   ],

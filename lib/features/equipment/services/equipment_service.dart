@@ -3,23 +3,51 @@ import 'package:myapp/features/equipment/models/equipment.dart';
 
 class EquipmentService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference _equipmentCollection = FirebaseFirestore.instance.collection('equipment');
 
+  // Get a stream of equipment
   Stream<List<Equipment>> getEquipment() {
-    return _equipmentCollection.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Equipment.fromFirestore(doc)).toList();
+    return _firestore.collection('equipment').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return Equipment(
+          id: doc.id,
+          name: data['name'] ?? '',
+          description: data['description'] ?? '',
+          price: (data['price'] ?? 0).toDouble(),
+          imageUrl: data['imageUrl'] ?? '',
+          ownerId: data['ownerId'] ?? '',
+          availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
+        );
+      }).toList();
     });
   }
 
+  // Add a new piece of equipment
   Future<void> addEquipment(Equipment equipment) {
-    return _equipmentCollection.add(equipment.toFirestore());
+    return _firestore.collection('equipment').add({
+      'name': equipment.name,
+      'description': equipment.description,
+      'price': equipment.price,
+      'imageUrl': equipment.imageUrl,
+      'ownerId': equipment.ownerId,
+      'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
+    });
   }
 
+  // Update an existing piece of equipment
   Future<void> updateEquipment(Equipment equipment) {
-    return _equipmentCollection.doc(equipment.id).update(equipment.toFirestore());
+    return _firestore.collection('equipment').doc(equipment.id).update({
+      'name': equipment.name,
+      'description': equipment.description,
+      'price': equipment.price,
+      'imageUrl': equipment.imageUrl,
+      'ownerId': equipment.ownerId,
+      'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
+    });
   }
 
-  Future<void> deleteEquipment(String equipmentId) {
-    return _equipmentCollection.doc(equipmentId).delete();
+  // Delete a piece of equipment
+  Future<void> deleteEquipment(String id) {
+    return _firestore.collection('equipment').doc(id).delete();
   }
 }

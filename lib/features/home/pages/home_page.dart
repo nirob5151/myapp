@@ -12,18 +12,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('MyApp', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
+        title: Text('EasyFarm', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.pets),
-            onPressed: () {
-              context.go('/pet-friendly');
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -78,13 +73,26 @@ class HomePage extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/add-equipment');
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
+      floatingActionButton: user == null
+          ? null
+          : FutureBuilder<String?>(
+              future: authService.getUserRole(user.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox.shrink();
+                }
+                if (snapshot.hasData && snapshot.data == 'Owner') {
+                  return FloatingActionButton(
+                    onPressed: () {
+                      context.go('/add-equipment');
+                    },
+                    child: const Icon(Icons.add),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
     );
   }
 }
