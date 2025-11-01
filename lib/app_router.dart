@@ -5,9 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/pages/signup_page.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
-import 'package:myapp/features/farm_management/pages/add_crop_page.dart';
-import 'package:myapp/features/farm_management/pages/add_farm_page.dart';
-import 'package:myapp/features/farm_management/pages/farm_management_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 
 class AppRouter {
@@ -33,25 +30,6 @@ class AppRouter {
         path: '/signup',
         builder: (BuildContext context, GoRouterState state) {
           return const SignUpPage();
-        },
-      ),
-      GoRoute(
-        path: '/farm_management',
-        builder: (BuildContext context, GoRouterState state) {
-          return const FarmManagementPage();
-        },
-      ),
-      GoRoute(
-        path: '/add_farm',
-        builder: (BuildContext context, GoRouterState state) {
-          return const AddFarmPage();
-        },
-      ),
-      GoRoute(
-        path: '/add_crop',
-        builder: (BuildContext context, GoRouterState state) {
-          final farmId = state.extra as String;
-          return AddCropPage(farmId: farmId);
         },
       ),
     ],
