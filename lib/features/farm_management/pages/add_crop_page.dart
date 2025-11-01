@@ -9,10 +9,10 @@ class AddCropPage extends StatefulWidget {
   const AddCropPage({super.key, required this.farmId});
 
   @override
-  _AddCropPageState createState() => _AddCropPageState();
+  AddCropPageState createState() => AddCropPageState();
 }
 
-class _AddCropPageState extends State<AddCropPage> {
+class AddCropPageState extends State<AddCropPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _plantingDate = '';
@@ -77,8 +77,12 @@ class _AddCropPageState extends State<AddCropPage> {
                       harvestDate: _harvestDate,
                       farmId: widget.farmId,
                     );
-                    await Provider.of<FarmService>(context, listen: false).addCrop(crop);
-                    Navigator.of(context).pop();
+                    final farmService = Provider.of<FarmService>(context, listen: false);
+                    final navigator = Navigator.of(context);
+                    await farmService.addCrop(crop);
+                    if (mounted) {
+                      navigator.pop();
+                    }
                   }
                 },
                 child: const Text('Add Crop'),
