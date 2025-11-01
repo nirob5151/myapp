@@ -142,8 +142,8 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildRoleCard(context, 'Farmer', Icons.eco_outlined),
-                  _buildRoleCard(context, 'Owner (Lender)', Icons.home_work_outlined),
+                  _buildRoleCard(context, 'Farmer', 'Farmer', Icons.eco_outlined),
+                  _buildRoleCard(context, 'Owner (Lender)', 'Owner', Icons.home_work_outlined),
                 ],
               )
             ],
@@ -153,9 +153,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildRoleCard(BuildContext context, String title, IconData icon) {
+  Widget _buildRoleCard(BuildContext context, String title, String role, IconData icon) {
     return GestureDetector(
-      onTap: () => context.go('/signup'),
+      onTap: () => context.go('/signup?role=$role'),
       child: Card(
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
