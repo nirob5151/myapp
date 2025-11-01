@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125390613754",
+    "project_id": "easyfarm-31bcd",
+    "storage_bucket": "easyfarm-31bcd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125390613754:android:8a9c37ef3116ee9fdf6d43",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqQFLyiVPzqn8XlTjpHj2HK54u6oz7Dh0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
