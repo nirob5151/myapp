@@ -86,8 +86,8 @@ class HomePage extends StatelessWidget {
                     onPressed: () {
                       context.go('/add-equipment');
                     },
-                    child: const Icon(Icons.add),
                     backgroundColor: Theme.of(context).primaryColor,
+                    child: const Icon(Icons.add),
                   );
                 }
                 return const SizedBox.shrink();

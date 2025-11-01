@@ -1,5 +1,7 @@
-import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myapp/features/authentication/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,7 +14,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _selectedRole = 'Farmer';
+  final ValueNotifier<String> _selectedRole = ValueNotifier<String>('Farmer');
+
+  Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final router = GoRouter.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      final user = await authService.signUpWithEmailAndPassword(
+        _emailController.text,
+        _passwordController.text,
+        _selectedRole.value,
+      );
+      if (user != null) {
+        router.go('/');
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +60,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
                   return null;
                 },
               ),
@@ -44,46 +74,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RadioListTile<String>(
-                    title: const Text('Farmer'),
-                    value: 'Farmer',
-                    groupValue: _selectedRole,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedRole = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('Owner'),
-                    value: 'Owner',
-                    groupValue: _selectedRole,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedRole = value!;
-                      });
-                    },
-                  ),
-                ],
+              ValueListenableBuilder<String>(
+                valueListenable: _selectedRole,
+                builder: (context, value, child) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: RadioListTile<String>(
+                          title: const Text('Farmer'),
+                          value: 'Farmer',
+                          groupValue: value,
+                          onChanged: (String? newValue) {
+                            _selectedRole.value = newValue!;
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: RadioListTile<String>(
+                          title: const Text('Owner'),
+                          value: 'Owner',
+                          groupValue: value,
+                          onChanged: (String? newValue) {
+                            _selectedRole.value = newValue!;
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    AuthService().signUpWithEmailAndPassword(
-                      _emailController.text,
-                      _passwordController.text,
-                      _selectedRole,
-                    );
-                  }
-                },
+                onPressed: _signUp,
                 child: const Text('Sign Up'),
               ),
             ],

@@ -14,6 +14,26 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Future<void> _login() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    // Store the BuildContext-dependent objects before the async call.
+    final router = GoRouter.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      await authService.signInWithEmailAndPassword(
+        _emailController.text,
+        _passwordController.text,
+      );
+      
+      router.go('/');
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
             ),
             TextField(
               controller: _passwordController,
@@ -35,20 +56,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final authService = Provider.of<AuthService>(context, listen: false);
-                try {
-                  await authService.signInWithEmailAndPassword(
-                    _emailController.text,
-                    _passwordController.text,
-                  );
-                  context.go('/');
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString())),
-                  );
-                }
-              },
+              onPressed: _login,
               child: const Text('Login'),
             ),
             TextButton(

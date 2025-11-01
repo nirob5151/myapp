@@ -14,7 +14,6 @@ class AuthService {
       final DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
       return doc.get('role') as String?;
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
@@ -36,7 +35,6 @@ class AuthService {
       }
       return user;
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
@@ -50,7 +48,6 @@ class AuthService {
       );
       return result.user;
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
