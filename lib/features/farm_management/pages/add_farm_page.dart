@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/farm_management/models/farm.dart';
 import 'package:myapp/features/farm_management/services/farm_service.dart';
@@ -24,16 +25,28 @@ class AddFarmPageState extends State<AddFarmPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Farm'),
+        title: Text('Add a New Farm', style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                'Farm Details',
+                style: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Farm Name'),
+                decoration: InputDecoration(
+                  labelText: 'Farm Name',
+                  labelStyle: GoogleFonts.roboto(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  prefixIcon: const Icon(Icons.business),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a farm name';
@@ -44,8 +57,14 @@ class AddFarmPageState extends State<AddFarmPage> {
                   _name = value!;
                 },
               ),
+              const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  labelStyle: GoogleFonts.roboto(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  prefixIcon: const Icon(Icons.location_on),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a location';
@@ -56,11 +75,10 @@ class AddFarmPageState extends State<AddFarmPage> {
                   _location = value!;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
                   if (user == null) {
-                    // Handle user not being logged in
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('You must be logged in to add a farm.')),
                     );
@@ -77,6 +95,12 @@ class AddFarmPageState extends State<AddFarmPage> {
                     context.pop();
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  textStyle: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 child: const Text('Add Farm'),
               ),
             ],
