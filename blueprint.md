@@ -55,6 +55,8 @@ It helps small and medium-scale farmers access modern tools without large upfron
     *   A list of equipment is displayed on the home page.
     *   Users with the "Owner" role can add new equipment with a name, description, price, and image.
     *   Equipment data is stored in Firestore, and images are stored in Firebase Storage.
+    *   Users can view the details of each piece of equipment on a dedicated screen.
+    *   The equipment detail screen fetches and displays real data from Firestore, including the owner's name.
 *   **UI:**
     *   The app has a basic theme with a primary color.
     *   The home page displays a list of equipment in a card format.
@@ -65,9 +67,6 @@ It helps small and medium-scale farmers access modern tools without large upfron
 
 ## Next Steps:
 
-*   **Equipment Details:**
-    *   Implement a details page for each piece of equipment.
-    *   Display all the equipment information, including the owner's details.
 *   **Booking:**
     *   Allow farmers to book equipment for specific dates.
     *   Implement a booking system to manage equipment availability.

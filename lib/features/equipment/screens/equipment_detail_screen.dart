@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
+import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/user/user_service.dart';
+import 'package:provider/provider.dart';
 
 class EquipmentDetailScreen extends StatelessWidget {
   final String equipmentId;
@@ -8,55 +11,79 @@ class EquipmentDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Fetch equipment details from Firestore using equipmentId
-
-    // For now, using placeholder data
-    final equipment = Equipment(
-      id: equipmentId,
-      name: 'Tractor',
-      description: 'A powerful tractor for all your farming needs.',
-      price: 100.0,
-      imageUrl: 'https://via.placeholder.com/150',
-      ownerId: 'owner123',
-    );
+    final equipmentService = EquipmentService();
+    final userService = Provider.of<UserService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(equipment.name),
+        title: const Text('Equipment Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network(equipment.imageUrl),
-            const SizedBox(height: 16),
-            Text(
-              equipment.name,
-              style: Theme.of(context).textTheme.headlineSmall,
+      body: FutureBuilder<Equipment?>(
+        future: equipmentService.getEquipmentById(equipmentId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('Equipment not found'));
+          }
+
+          final equipment = snapshot.data!;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (equipment.imageUrl.isNotEmpty)
+                  Image.network(
+                    equipment.imageUrl,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image, size: 100),
+                  ),
+                const SizedBox(height: 16),
+                Text(
+                  equipment.name,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  equipment.description,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '\$${equipment.price}/day',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16),
+                FutureBuilder<Map<String, dynamic>?>(
+                  future: userService.getUser(equipment.ownerId),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Text('Loading owner info...');
+                    }
+                    if (userSnapshot.hasError || !userSnapshot.hasData) {
+                      return const Text('Owner: Not available');
+                    }
+                    final owner = userSnapshot.data!;
+                    return Text('Owner: ${owner['name'] ?? 'N/A'}');
+                  },
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: () {
+                    // TODO: Implement booking functionality
+                  },
+                  child: const Text('Book Now'),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              equipment.description,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '\$${equipment.price}/day',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            // TODO: Display owner information
-            const Text('Owner: John Doe'),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement booking functionality
-              },
-              child: const Text('Book Now'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

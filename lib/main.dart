@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/app_router.dart';
+import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/user/user_service.dart';
 import 'package:myapp/firebase_options.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +25,12 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<AuthService>(
           create: (_) => AuthService(),
+        ),
+        Provider<EquipmentService>(
+          create: (_) => EquipmentService(),
+        ),
+        Provider<UserService>(
+          create: (_) => UserService(),
         ),
       ],
       child: MaterialApp.router(
