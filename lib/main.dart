@@ -17,31 +17,43 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authService = AuthService();
-    final authNotifier = ValueNotifier<User?>(authService.currentUser);
+  State<MyApp> createState() => _MyAppState();
+}
 
-    authService.authStateChanges.listen((user) {
+class _MyAppState extends State<MyApp> {
+  late final AuthService _authService;
+  late final AppRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = AuthService();
+    final authNotifier = ValueNotifier<User?>(_authService.currentUser);
+
+    _authService.authStateChanges.listen((user) {
       authNotifier.value = user;
     });
 
-    final router = AppRouter(authNotifier).router;
+    _appRouter = AppRouter(authNotifier);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-          create: (_) => authService,
+          create: (_) => _authService,
         ),
         Provider<FarmService>(
           create: (_) => FarmService(),
         ),
         StreamProvider<User?>(
-          create: (context) => authService.authStateChanges,
-          initialData: authService.currentUser,
+          create: (context) => _authService.authStateChanges,
+          initialData: _authService.currentUser,
         ),
       ],
       child: MaterialApp.router(
@@ -52,7 +64,7 @@ class MyApp extends StatelessWidget {
             Theme.of(context).textTheme,
           ),
         ),
-        routerConfig: router,
+        routerConfig: _appRouter.router,
       ),
     );
   }

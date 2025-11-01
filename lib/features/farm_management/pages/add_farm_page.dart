@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/farm_management/models/farm.dart';
 import 'package:myapp/features/farm_management/services/farm_service.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,9 @@ class AddFarmPageState extends State<AddFarmPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Farm'),
@@ -55,16 +59,22 @@ class AddFarmPageState extends State<AddFarmPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  if (user == null) {
+                    // Handle user not being logged in
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You must be logged in to add a farm.')),
+                    );
+                    return;
+                  }
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     final farm = Farm(
                       name: _name,
                       location: _location,
-                      // Replace 'YOUR_OWNER_ID' with the actual owner ID
-                      ownerId: 'YOUR_OWNER_ID',
+                      ownerId: user.uid,
                     );
                     context.read<FarmService>().addFarm(farm);
-                    Navigator.of(context).pop();
+                    context.pop();
                   }
                 },
                 child: const Text('Add Farm'),
