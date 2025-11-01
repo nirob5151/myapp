@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/features/authentication/screens/login_screen.dart';
+import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/screens/signup_screen.dart';
-import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
@@ -12,30 +11,25 @@ import 'package:myapp/go_router_refresh_stream.dart';
 class AppRouter {
   static final router = GoRouter(
     refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
-    initialLocation: '/welcome',
+    initialLocation: '/login',
     routes: <RouteBase>[
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const WelcomeScreen();
-        },
-      ),
-      GoRoute(
-        path: '/welcome',
-        builder: (BuildContext context, GoRouterState state) {
-          return const WelcomeScreen();
+          return const LoginPage();
         },
       ),
       GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginScreen();
+          return const LoginPage();
         },
       ),
       GoRoute(
         path: '/signup',
         builder: (BuildContext context, GoRouterState state) {
-          return const SignUpScreen();
+          final role = state.uri.queryParameters['role'];
+          return SignUpScreen(role: role);
         },
       ),
       GoRoute(
@@ -61,10 +55,10 @@ class AppRouter {
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final bool loggedIn = FirebaseAuth.instance.currentUser != null;
-      final bool loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/signup' || state.matchedLocation == '/welcome' || state.matchedLocation == '/';
+      final bool loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
       if (!loggedIn && !loggingIn) {
-        return '/welcome';
+        return '/login';
       }
 
       if (loggedIn && loggingIn) {
