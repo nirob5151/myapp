@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/app_router.dart';
+import 'package:myapp/features/equipment/services/equipment_service.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:myapp/features/authentication/services/auth_service.dart';
-import 'package:myapp/features/farm_management/services/farm_service.dart';
 import 'package:myapp/firebase_options.dart';
 
 void main() async {
@@ -42,8 +42,8 @@ class _MyAppState extends State<MyApp> {
         Provider<AuthService>(
           create: (_) => _authService,
         ),
-        Provider<FarmService>(
-          create: (_) => FarmService(),
+        Provider<EquipmentService>(
+          create: (_) => EquipmentService(),
         ),
         StreamProvider<User?>(
           create: (context) => _authService.authStateChanges,
