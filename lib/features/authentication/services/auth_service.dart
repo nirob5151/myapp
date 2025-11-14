@@ -3,12 +3,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+  final GoogleSignIn _googleSignIn;
 
   // Get current user
   User? get currentUser => _auth.currentUser;
+
+  AuthService({FirebaseAuth? auth, FirebaseFirestore? firestore, GoogleSignIn? googleSignIn})
+      : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   // Get user role
   Future<String?> getUserRole(String uid) async {
@@ -42,6 +47,7 @@ class AuthService {
       final User? user = result.user;
       if (user != null) {
         await _createUserDocument(user, name, email, role);
+        await user.sendEmailVerification();
       }
       return user;
     } catch (e) {

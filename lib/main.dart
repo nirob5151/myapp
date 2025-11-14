@@ -1,3 +1,5 @@
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/app_router.dart';
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-          create: (_) => AuthService(),
+          create: (_) => AuthService(auth: FirebaseAuth.instance),
         ),
         Provider<EquipmentService>(
           create: (_) => EquipmentService(),
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.green,
         ),
-        routerConfig: AppRouter.router,
+        routerConfig: AppRouter(auth: FirebaseAuth.instance).router,
       ),
     );
   }

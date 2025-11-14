@@ -1,17 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/features/authentication/screens/login_screen.dart';
+import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/screens/signup_screen.dart';
+import 'package:myapp/features/authentication/screens/verify_email_screen.dart';
 import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
-import 'package:myapp/features/home/pages/home_page.dart';
+import 'package:myapp/features/home/pages/main_screen.dart';
 import 'package:myapp/go_router_refresh_stream.dart';
 
 class AppRouter {
-  static final router = GoRouter(
-    refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
+  final FirebaseAuth auth;
+
+  AppRouter({required this.auth});
+
+  late final router = GoRouter(
+    refreshListenable: GoRouterRefreshStream(auth.authStateChanges()),
     initialLocation: '/',
     routes: <RouteBase>[
       GoRoute(
@@ -23,7 +28,7 @@ class AppRouter {
       GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginScreen();
+          return const LoginPage();
         },
       ),
       GoRoute(
@@ -34,18 +39,25 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/verify-email',
+        builder: (BuildContext context, GoRouterState state) {
+          return const VerifyEmailScreen();
+        },
+      ),
+      GoRoute(
         path: '/home',
         builder: (BuildContext context, GoRouterState state) {
-          return const HomePage();
+          return const MainScreen(); // Main entry point for authenticated users
         },
         routes: [
-           GoRoute(
-              path: 'equipment/:id',
-              builder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return EquipmentDetailScreen(equipmentId: id);
-              }),
-        ]
+          GoRoute(
+            path: 'equipment/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return EquipmentDetailScreen(equipmentId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/add-equipment',
@@ -55,17 +67,36 @@ class AppRouter {
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final bool loggedIn = FirebaseAuth.instance.currentUser != null;
-      final bool loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
+      final user = auth.currentUser;
+      final bool loggedIn = user != null;
+      final bool emailVerified = user?.emailVerified ?? false;
 
-      if (!loggedIn && !loggingIn) {
-        return '/login';
+      final String location = state.matchedLocation;
+      final bool isAtAuthScreen = location == '/' || location == '/login' || location == '/signup';
+      final bool isAtVerifyScreen = location == '/verify-email';
+
+      // Case 1: User is not logged in.
+      if (!loggedIn) {
+        // If they are already on an auth screen, let them stay. Otherwise, redirect to welcome.
+        return isAtAuthScreen ? null : '/';
       }
 
-      if (loggedIn && loggingIn) {
-        return '/';
+      // Case 2: User is logged in.
+      // A) Email is not verified.
+      if (!emailVerified) {
+        // If they are not on the verify screen, send them there.
+        return isAtVerifyScreen ? null : '/verify-email';
       }
 
+      // B) Email is verified.
+      if (emailVerified) {
+        // If they are on an auth screen or the verify screen, send them home.
+        if (isAtAuthScreen || isAtVerifyScreen) {
+          return '/home';
+        }
+      }
+
+      // Otherwise, no redirect needed.
       return null;
     },
   );
