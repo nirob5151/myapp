@@ -16,6 +16,7 @@ class EquipmentService {
           price: (data['price'] ?? 0).toDouble(),
           imageUrl: data['imageUrl'] ?? '',
           ownerId: data['ownerId'] ?? '',
+          isAvailable: data['isAvailable'] ?? true,
           availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
         );
       }).toList();
@@ -34,6 +35,7 @@ class EquipmentService {
         price: (data['price'] ?? 0).toDouble(),
         imageUrl: data['imageUrl'] ?? '',
         ownerId: data['ownerId'] ?? '',
+        isAvailable: data['isAvailable'] ?? true,
         availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
       );
     }
@@ -48,6 +50,7 @@ class EquipmentService {
       'price': equipment.price,
       'imageUrl': equipment.imageUrl,
       'ownerId': equipment.ownerId,
+      'isAvailable': equipment.isAvailable,
       'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
     });
   }
@@ -60,6 +63,7 @@ class EquipmentService {
       'price': equipment.price,
       'imageUrl': equipment.imageUrl,
       'ownerId': equipment.ownerId,
+      'isAvailable': equipment.isAvailable,
       'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
     });
   }

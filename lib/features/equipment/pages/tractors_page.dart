@@ -1,15 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
-import 'package:myapp/features/equipment/services/equipment_service.dart';
-import 'package:provider/provider.dart';
 
-class EquipmentPage extends StatelessWidget {
-  const EquipmentPage({super.key});
+class TractorsPage extends StatelessWidget {
+  const TractorsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final equipmentService = Provider.of<EquipmentService>(context, listen: false);
+    final List<Equipment> equipmentList = [
+      Equipment(
+        id: '1',
+        name: 'Tractor for Rent - Sonalika 750',
+        description: 'A powerful and versatile tractor.',
+        price: 500,
+        imageUrl: 'https://www.deere.co.uk/assets/images/region-2/products/tractors/8r-series/8r-370/8r_370_r2d082779_large_3206e6402434b32a5384385e5893392a4582f346.jpg',
+        ownerId: 'dummy_owner',
+        isAvailable: true,
+        availableDates: [],
+      ),
+      Equipment(
+        id: '2',
+        name: 'Tractor for Rent',
+        description: 'High-performance tractor with a comfortable cab.',
+        price: 400,
+        imageUrl: 'https://assets.cnhindustrial.com/caseih/NAFTA/NAFTAASSETS/Products/Tractors/Magnum-Series/magnum-380/Magnum-380-Tractor-01.jpg',
+        ownerId: 'dummy_owner',
+        isAvailable: true,
+        availableDates: [],
+      ),
+      Equipment(
+        id: '3',
+        name: 'Tractor for Rent - New Holland T5',
+        description: 'A reliable and efficient tractor for modern farming.',
+        price: 300,
+        imageUrl: 'https://agriculture.newholland.com/nar/en-us/PublishingImages/products/tractors-telehandlers/t8-genesis-plmi/gallery/2021-new-holland-t8-genesis-plmi-01.jpg',
+        ownerId: 'dummy_owner',
+        isAvailable: true,
+        availableDates: [],
+      ),
+       Equipment(
+        id: '4',
+        name: 'Tractor for Rent - Massey Ferguson',
+        description: 'A reliable and efficient tractor for modern farming.',
+        price: 280,
+        imageUrl: 'https://www.masseyferguson.com/content/dam/public/masseyfergusonglobal/markets/en_za/products/tractors/mf-9s-series/massey-ferguson-9s-tractor-hero-image.jpg',
+        ownerId: 'dummy_owner',
+        isAvailable: false,
+        availableDates: [],
+      ),
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -100,20 +139,7 @@ class EquipmentPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: StreamBuilder<List<Equipment>>(
-              stream: equipmentService.getEquipment(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No equipment available.'),
-                  );
-                }
-
-                final equipmentList = snapshot.data!;
-                return ListView.builder(
+            child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   itemCount: equipmentList.length,
                   itemBuilder: (context, index) {
@@ -166,10 +192,10 @@ class EquipmentPage extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 8.0),
-                                  const Text(
-                                    'Availability',
+                                  Text(
+                                    equipment.isAvailable ? 'Availability' : 'Not Available',
                                     style: TextStyle(
-                                      color: Colors.grey,
+                                      color: equipment.isAvailable ? Colors.grey : Colors.red,
                                       fontSize: 14.0,
                                     ),
                                   ),
@@ -181,18 +207,9 @@ class EquipmentPage extends StatelessWidget {
                       ),
                     );
                   },
-                );
-              },
-            ),
+                )
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF1B5E20),
-        onPressed: () {
-          context.go('/add-equipment');
-        },
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

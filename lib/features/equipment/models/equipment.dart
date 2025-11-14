@@ -5,6 +5,7 @@ class Equipment {
   final double price;
   final String imageUrl;
   final String ownerId;
+  final bool isAvailable;
   final List<DateTime> availableDates;
 
   Equipment({
@@ -14,8 +15,7 @@ class Equipment {
     required this.price,
     required this.imageUrl,
     required this.ownerId,
+    required this.isAvailable,
     required this.availableDates,
   });
-
-  bool get isAvailable => availableDates.isNotEmpty;
 }

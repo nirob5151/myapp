@@ -98,7 +98,9 @@ class HomePage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                 child: InkWell(
                   onTap: () {
-                    // Handle category tap
+                     if (category['label'] == 'Tractors') {
+                      context.go('/tractors');
+                    }
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

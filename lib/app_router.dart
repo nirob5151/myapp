@@ -6,6 +6,7 @@ import 'package:myapp/features/authentication/screens/signup_screen.dart';
 import 'package:myapp/features/authentication/screens/verify_email_screen.dart';
 import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
+import 'package:myapp/features/equipment/pages/tractors_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/main_screen.dart';
 import 'package:myapp/go_router_refresh_stream.dart';
@@ -23,6 +24,12 @@ class AppRouter {
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
           return const WelcomeScreen();
+        },
+      ),
+       GoRoute(
+        path: '/tractors',
+        builder: (BuildContext context, GoRouterState state) {
+          return const TractorsPage();
         },
       ),
       GoRoute(

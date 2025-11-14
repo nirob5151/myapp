@@ -57,6 +57,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 250.00,
           imageUrl: 'https://www.deere.co.uk/assets/images/region-2/products/tractors/8r-series/8r-370/8r_370_r2d082779_large_3206e6402434b32a5384385e5893392a4582f346.jpg',
           ownerId: user.uid,
+          isAvailable: true,
           availableDates: [DateTime.now()],
         ),
         Equipment(
@@ -66,6 +67,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 275.00,
           imageUrl: 'https://assets.cnhindustrial.com/caseih/NAFTA/NAFTAASSETS/Products/Tractors/Magnum-Series/magnum-380/Magnum-380-Tractor-01.jpg',
           ownerId: user.uid,
+          isAvailable: true,
           availableDates: [DateTime.now()],
         ),
         Equipment(
@@ -75,6 +77,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 260.00,
           imageUrl: 'https://agriculture.newholland.com/nar/en-us/PublishingImages/products/tractors-telehandlers/t8-genesis-plmi/gallery/2021-new-holland-t8-genesis-plmi-01.jpg',
           ownerId: user.uid,
+          isAvailable: false,
           availableDates: [],
         ),
       ];
@@ -106,6 +109,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 550.00,
           imageUrl: 'https://www.deere.com/assets/images/region-4/products/combines/s-series/s700/s790_combine_r4d088229_large.jpg',
           ownerId: user.uid,
+          isAvailable: true,
           availableDates: [DateTime.now()],
         ),
         Equipment(
@@ -115,6 +119,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 575.00,
           imageUrl: 'https://assets.cnhindustrial.com/caseih/NAFTA/NAFTAASSETS/Products/Harvesting/Axial-Flow-250-Series/axial-flow-250-series-combine-01.jpg',
           ownerId: user.uid,
+          isAvailable: true,
           availableDates: [DateTime.now()],
         ),
         Equipment(
@@ -124,6 +129,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           price: 560.00,
           imageUrl: 'https://agriculture.newholland.com/nar/en-us/PublishingImages/products/harvesting/cr-revelation-twin-rotor-combines/gallery/2021-new-holland-cr-revelation-twin-rotor-combines-01.jpg',
           ownerId: user.uid,
+          isAvailable: false,
           availableDates: [],
         ),
       ];
@@ -207,6 +213,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                       price: double.parse(_priceController.text),
                       imageUrl: imageUrl,
                       ownerId: user.uid,
+                      isAvailable: true, 
                       availableDates: [],
                     );
                     await equipmentService.addEquipment(newEquipment);
