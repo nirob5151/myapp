@@ -18,7 +18,9 @@ class EquipmentService {
           ownerId: data['ownerId'] ?? '',
           isAvailable: data['isAvailable'] ?? true,
           availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
-          category: data['category'] ?? '', // Added category
+          category: data['category'] ?? '',
+          country: data['country'] ?? '',
+          division: data['division'] ?? '',
         );
       }).toList();
     });
@@ -38,7 +40,9 @@ class EquipmentService {
         ownerId: data['ownerId'] ?? '',
         isAvailable: data['isAvailable'] ?? true,
         availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
-        category: data['category'] ?? '', // Added category
+        category: data['category'] ?? '',
+        country: data['country'] ?? '',
+        division: data['division'] ?? '',
       );
     }
     return null;
@@ -54,7 +58,9 @@ class EquipmentService {
       'ownerId': equipment.ownerId,
       'isAvailable': equipment.isAvailable,
       'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
-      'category': equipment.category, // Added category
+      'category': equipment.category,
+      'country': equipment.country,
+      'division': equipment.division,
     });
   }
 
@@ -68,7 +74,9 @@ class EquipmentService {
       'ownerId': equipment.ownerId,
       'isAvailable': equipment.isAvailable,
       'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
-      'category': equipment.category, // Added category
+      'category': equipment.category,
+      'country': equipment.country,
+      'division': equipment.division,
     });
   }
 

@@ -10,6 +10,8 @@ class Equipment {
   final bool isAvailable;
   final List<DateTime> availableDates;
   final String category;
+  final String country;
+  final String division;
 
   Equipment({
     required this.id,
@@ -21,6 +23,8 @@ class Equipment {
     required this.isAvailable,
     required this.availableDates,
     required this.category,
+    required this.country,
+    required this.division,
   });
 
   factory Equipment.fromFirestore(DocumentSnapshot doc) {
@@ -35,6 +39,8 @@ class Equipment {
       isAvailable: data['isAvailable'] ?? false,
       availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((timestamp) => (timestamp as Timestamp).toDate()).toList(),
       category: data['category'] ?? '',
+      country: data['country'] ?? '',
+      division: data['division'] ?? '',
     );
   }
 
@@ -48,6 +54,8 @@ class Equipment {
       'isAvailable': isAvailable,
       'availableDates': availableDates.map((date) => Timestamp.fromDate(date)).toList(),
       'category': category,
+      'country': country,
+      'division': division,
     };
   }
 }

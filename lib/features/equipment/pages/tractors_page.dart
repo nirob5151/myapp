@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/equipment/helpers/currency_helper.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
+import 'package:myapp/features/equipment/services/location_service.dart';
 import 'package:provider/provider.dart';
 
 class TractorsPage extends StatefulWidget {
@@ -15,7 +16,12 @@ class TractorsPage extends StatefulWidget {
 
 class _TractorsPageState extends State<TractorsPage> {
   String? _selectedCategory;
-  String? _selectedLocation;
+  String? _selectedCountry;
+  String? _selectedDivision;
+
+  final LocationService _locationService = LocationService();
+  late List<String> _countries;
+  late List<String> _divisions;
 
   final List<Equipment> _allEquipment = [
       Equipment(
@@ -28,6 +34,8 @@ class _TractorsPageState extends State<TractorsPage> {
         isAvailable: true,
         availableDates: [],
         category: 'Sonalika',
+        country: 'Bangladesh',
+        division: 'Dhaka',
       ),
       Equipment(
         id: '2',
@@ -39,6 +47,8 @@ class _TractorsPageState extends State<TractorsPage> {
         isAvailable: true,
         availableDates: [],
         category: 'Case IH',
+        country: 'Bangladesh',
+        division: 'Chittagong',
       ),
       Equipment(
         id: '3',
@@ -50,6 +60,8 @@ class _TractorsPageState extends State<TractorsPage> {
         isAvailable: true,
         availableDates: [],
         category: 'New Holland',
+        country: 'India',
+        division: 'Punjab',
       ),
        Equipment(
         id: '4',
@@ -61,6 +73,8 @@ class _TractorsPageState extends State<TractorsPage> {
         isAvailable: false,
         availableDates: [],
         category: 'Massey Ferguson',
+        country: 'India',
+        division: 'Maharashtra',
       ),
     ];
 
@@ -69,15 +83,27 @@ class _TractorsPageState extends State<TractorsPage> {
   @override
   void initState() {
     super.initState();
+    _countries = _locationService.getCountries();
+    _divisions = [];
     _filteredEquipment = _allEquipment;
+  }
+
+  void _onCountryChanged(String? newValue) {
+    setState(() {
+      _selectedCountry = newValue;
+      _selectedDivision = null;
+      _divisions = _locationService.getDivisions(newValue ?? '');
+      _filterEquipment();
+    });
   }
 
   void _filterEquipment() {
     setState(() {
       _filteredEquipment = _allEquipment.where((equipment) {
         final categoryMatch = _selectedCategory == null || _selectedCategory == 'All' || equipment.category == _selectedCategory;
-        final locationMatch = true; 
-        return categoryMatch && locationMatch;
+        final countryMatch = _selectedCountry == null || equipment.country == _selectedCountry;
+        final divisionMatch = _selectedDivision == null || equipment.division == _selectedDivision;
+        return categoryMatch && countryMatch && divisionMatch;
       }).toList();
     });
   }
@@ -168,9 +194,36 @@ class _TractorsPageState extends State<TractorsPage> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
-                             hint: const Text('Location', style: TextStyle(color: Colors.white, fontSize: 14)),
-                            value: _selectedLocation,
-                            items: <String>['Location A', 'Location B', 'Location C'].map((String value) {
+                             hint: const Text('Country', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            value: _selectedCountry,
+                            items: _countries.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value, style: const TextStyle(color: Colors.black)),
+                              );
+                            }).toList(),
+                            onChanged: _onCountryChanged,
+                            style: const TextStyle(color: Colors.white),
+                            dropdownColor: Colors.white,
+                            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                     const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1B5E20),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                             hint: const Text('Division', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            value: _selectedDivision,
+                            items: _divisions.map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value, style: const TextStyle(color: Colors.black)),
@@ -178,8 +231,8 @@ class _TractorsPageState extends State<TractorsPage> {
                             }).toList(),
                             onChanged: (newValue) {
                               setState(() {
-                                 _selectedLocation = newValue;
-                                 _filterEquipment();
+                                _selectedDivision = newValue;
+                                _filterEquipment();
                               });
                             },
                             style: const TextStyle(color: Colors.white),

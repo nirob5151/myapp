@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/equipment/services/location_service.dart';
 import 'package:provider/provider.dart';
 
 class AddEquipmentPage extends StatefulWidget {
@@ -21,8 +22,29 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
-  final _categoryController = TextEditingController(); // Added category controller
+  final _categoryController = TextEditingController();
+  String? _selectedCountry;
+  String? _selectedDivision;
   File? _image;
+
+  final LocationService _locationService = LocationService();
+  late List<String> _countries;
+  late List<String> _divisions;
+
+  @override
+  void initState() {
+    super.initState();
+    _countries = _locationService.getCountries();
+    _divisions = [];
+  }
+
+  void _onCountryChanged(String? newValue) {
+    setState(() {
+      _selectedCountry = newValue;
+      _selectedDivision = null;
+      _divisions = _locationService.getDivisions(newValue ?? '');
+    });
+  }
 
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -61,6 +83,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: true,
           availableDates: [DateTime.now()],
           category: 'Tractor',
+          country: 'Bangladesh',
+          division: 'Dhaka',
         ),
         Equipment(
           id: '',
@@ -72,6 +96,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: true,
           availableDates: [DateTime.now()],
           category: 'Tractor',
+          country: 'Bangladesh',
+          division: 'Chittagong',
         ),
         Equipment(
           id: '',
@@ -83,6 +109,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: false,
           availableDates: [],
           category: 'Tractor',
+          country: 'India',
+          division: 'Punjab',
         ),
       ];
 
@@ -116,6 +144,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: true,
           availableDates: [DateTime.now()],
           category: 'Harvester',
+          country: 'Bangladesh',
+          division: 'Rajshahi',
         ),
         Equipment(
           id: '',
@@ -127,6 +157,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: true,
           availableDates: [DateTime.now()],
           category: 'Harvester',
+          country: 'India',
+          division: 'Maharashtra',
         ),
         Equipment(
           id: '',
@@ -138,6 +170,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           isAvailable: false,
           availableDates: [],
           category: 'Harvester',
+          country: 'India',
+          division: 'Uttar Pradesh',
         ),
       ];
 
@@ -201,7 +235,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                 },
               ),
               TextFormField(
-                controller: _categoryController, // Added category field
+                controller: _categoryController, 
                 decoration: const InputDecoration(labelText: 'Category'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -209,6 +243,34 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                   }
                   return null;
                 },
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedCountry,
+                hint: const Text('Select Country'),
+                items: _countries.map((String country) {
+                  return DropdownMenuItem<String>(
+                    value: country,
+                    child: Text(country),
+                  );
+                }).toList(),
+                onChanged: _onCountryChanged,
+                validator: (value) => value == null ? 'Please select a country' : null,
+              ),
+              DropdownButtonFormField<String>(
+                value: _selectedDivision,
+                hint: const Text('Select Division'),
+                items: _divisions.map((String division) {
+                  return DropdownMenuItem<String>(
+                    value: division,
+                    child: Text(division),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedDivision = newValue;
+                  });
+                },
+                validator: (value) => value == null ? 'Please select a division' : null,
               ),
               const SizedBox(height: 20),
               _image != null
@@ -232,7 +294,9 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                       ownerId: user.uid,
                       isAvailable: true, 
                       availableDates: [],
-                      category: _categoryController.text, // Added category
+                      category: _categoryController.text, 
+                      country: _selectedCountry!,
+                      division: _selectedDivision!,
                     );
                     await equipmentService.addEquipment(newEquipment);
                     if (context.mounted) {
