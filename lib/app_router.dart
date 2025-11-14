@@ -6,6 +6,8 @@ import 'package:myapp/features/authentication/screens/signup_screen.dart';
 import 'package:myapp/features/authentication/screens/verify_email_screen.dart';
 import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
+import 'package:myapp/features/equipment/pages/harvesters_page.dart';
+import 'package:myapp/features/equipment/pages/pumps_page.dart';
 import 'package:myapp/features/equipment/pages/tractors_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/main_screen.dart';
@@ -30,6 +32,18 @@ class AppRouter {
         path: '/tractors',
         builder: (BuildContext context, GoRouterState state) {
           return const TractorsPage();
+        },
+      ),
+      GoRoute(
+        path: '/harvesters',
+        builder: (BuildContext context, GoRouterState state) {
+          return const HarvestersPage();
+        },
+      ),
+      GoRoute(
+        path: '/pumps',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PumpsPage();
         },
       ),
       GoRoute(
