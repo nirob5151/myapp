@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Equipment {
   final String id;
   final String name;
@@ -7,6 +9,7 @@ class Equipment {
   final String ownerId;
   final bool isAvailable;
   final List<DateTime> availableDates;
+  final String category;
 
   Equipment({
     required this.id,
@@ -17,5 +20,34 @@ class Equipment {
     required this.ownerId,
     required this.isAvailable,
     required this.availableDates,
+    required this.category,
   });
+
+  factory Equipment.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return Equipment(
+      id: doc.id,
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      price: (data['price'] ?? 0).toDouble(),
+      imageUrl: data['imageUrl'] ?? '',
+      ownerId: data['ownerId'] ?? '',
+      isAvailable: data['isAvailable'] ?? false,
+      availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((timestamp) => (timestamp as Timestamp).toDate()).toList(),
+      category: data['category'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'name': name,
+      'description': description,
+      'price': price,
+      'imageUrl': imageUrl,
+      'ownerId': ownerId,
+      'isAvailable': isAvailable,
+      'availableDates': availableDates.map((date) => Timestamp.fromDate(date)).toList(),
+      'category': category,
+    };
+  }
 }

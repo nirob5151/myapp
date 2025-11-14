@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/equipment/helpers/currency_helper.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:provider/provider.dart';
 
-class TractorsPage extends StatelessWidget {
+class TractorsPage extends StatefulWidget {
   const TractorsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final user = authService.currentUser;
-    final List<Equipment> equipmentList = [
+  State<TractorsPage> createState() => _TractorsPageState();
+}
+
+class _TractorsPageState extends State<TractorsPage> {
+  String? _selectedCategory;
+  String? _selectedLocation;
+
+  final List<Equipment> _allEquipment = [
       Equipment(
         id: '1',
         name: 'Tractor for Rent - Sonalika 750',
@@ -22,6 +27,7 @@ class TractorsPage extends StatelessWidget {
         ownerId: 'dummy_owner',
         isAvailable: true,
         availableDates: [],
+        category: 'Sonalika',
       ),
       Equipment(
         id: '2',
@@ -32,6 +38,7 @@ class TractorsPage extends StatelessWidget {
         ownerId: 'dummy_owner',
         isAvailable: true,
         availableDates: [],
+        category: 'Case IH',
       ),
       Equipment(
         id: '3',
@@ -42,6 +49,7 @@ class TractorsPage extends StatelessWidget {
         ownerId: 'dummy_owner',
         isAvailable: true,
         availableDates: [],
+        category: 'New Holland',
       ),
        Equipment(
         id: '4',
@@ -52,9 +60,33 @@ class TractorsPage extends StatelessWidget {
         ownerId: 'dummy_owner',
         isAvailable: false,
         availableDates: [],
+        category: 'Massey Ferguson',
       ),
     ];
 
+  late List<Equipment> _filteredEquipment;
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredEquipment = _allEquipment;
+  }
+
+  void _filterEquipment() {
+    setState(() {
+      _filteredEquipment = _allEquipment.where((equipment) {
+        final categoryMatch = _selectedCategory == null || _selectedCategory == 'All' || equipment.category == _selectedCategory;
+        final locationMatch = true; 
+        return categoryMatch && locationMatch;
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -105,13 +137,19 @@ class TractorsPage extends StatelessWidget {
                           child: DropdownButton<String>(
                             isExpanded: true,
                             hint: const Text('Category', style: TextStyle(color: Colors.white, fontSize: 14)),
-                            items: <String>['Sonalika', 'New Holland', 'Massey Ferguson'].map((String value) {
+                            value: _selectedCategory,
+                            items: <String>['All', 'Sonalika', 'New Holland', 'Massey Ferguson', 'Case IH'].map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value, style: const TextStyle(color: Colors.black)),
                               );
                             }).toList(),
-                            onChanged: (_) {},
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedCategory = newValue;
+                                _filterEquipment();
+                              });
+                            },
                             style: const TextStyle(color: Colors.white),
                             dropdownColor: Colors.white,
                             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
@@ -130,14 +168,20 @@ class TractorsPage extends StatelessWidget {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
-                            hint: const Text('Location', style: TextStyle(color: Colors.white, fontSize: 14)),
+                             hint: const Text('Location', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            value: _selectedLocation,
                             items: <String>['Location A', 'Location B', 'Location C'].map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value, style: const TextStyle(color: Colors.black)),
                               );
                             }).toList(),
-                            onChanged: (_) {},
+                            onChanged: (newValue) {
+                              setState(() {
+                                 _selectedLocation = newValue;
+                                 _filterEquipment();
+                              });
+                            },
                             style: const TextStyle(color: Colors.white),
                             dropdownColor: Colors.white,
                             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
@@ -151,9 +195,9 @@ class TractorsPage extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      itemCount: equipmentList.length,
+                      itemCount: _filteredEquipment.length,
                       itemBuilder: (context, index) {
-                        final equipment = equipmentList[index];
+                        final equipment = _filteredEquipment[index];
                         return Card(
                           elevation: 2.0,
                           color: Colors.white,
@@ -195,7 +239,7 @@ class TractorsPage extends StatelessWidget {
                                       const SizedBox(height: 8.0),
                                       Text(
                                         '$currencySymbol${equipment.price.toStringAsFixed(0)}/day',
-                                        style: TextStyle(
+                                        style: GoogleFonts.notoSans(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16.0,
                                           color: Colors.green[800],

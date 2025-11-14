@@ -21,6 +21,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
+  final _categoryController = TextEditingController(); // Added category controller
   File? _image;
 
   Future<void> _pickImage() async {
@@ -59,6 +60,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: true,
           availableDates: [DateTime.now()],
+          category: 'Tractor',
         ),
         Equipment(
           id: '',
@@ -69,6 +71,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: true,
           availableDates: [DateTime.now()],
+          category: 'Tractor',
         ),
         Equipment(
           id: '',
@@ -79,6 +82,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: false,
           availableDates: [],
+          category: 'Tractor',
         ),
       ];
 
@@ -111,6 +115,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: true,
           availableDates: [DateTime.now()],
+          category: 'Harvester',
         ),
         Equipment(
           id: '',
@@ -121,6 +126,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: true,
           availableDates: [DateTime.now()],
+          category: 'Harvester',
         ),
         Equipment(
           id: '',
@@ -131,6 +137,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
           ownerId: user.uid,
           isAvailable: false,
           availableDates: [],
+          category: 'Harvester',
         ),
       ];
 
@@ -193,6 +200,16 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                   return null;
                 },
               ),
+              TextFormField(
+                controller: _categoryController, // Added category field
+                decoration: const InputDecoration(labelText: 'Category'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the equipment category';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 20),
               _image != null
                   ? Image.file(_image!, height: 100)
@@ -215,6 +232,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                       ownerId: user.uid,
                       isAvailable: true, 
                       availableDates: [],
+                      category: _categoryController.text, // Added category
                     );
                     await equipmentService.addEquipment(newEquipment);
                     if (context.mounted) {
