@@ -119,7 +119,7 @@ class _TractorsPageState extends State<TractorsPage> {
         backgroundColor: const Color(0xFF1B5E20),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/home'),
         ),
         title: const Text('Tractor', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         elevation: 0,
