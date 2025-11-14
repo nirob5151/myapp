@@ -18,6 +18,7 @@ class _TractorsPageState extends State<TractorsPage> {
   String? _selectedCategory;
   String? _selectedCountry;
   String? _selectedDivision;
+  final TextEditingController _searchController = TextEditingController();
 
   final LocationService _locationService = LocationService();
   late List<String> _countries;
@@ -86,6 +87,13 @@ class _TractorsPageState extends State<TractorsPage> {
     _countries = _locationService.getCountries();
     _divisions = [];
     _filteredEquipment = _allEquipment;
+    _searchController.addListener(_filterEquipment);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _onCountryChanged(String? newValue) {
@@ -98,12 +106,14 @@ class _TractorsPageState extends State<TractorsPage> {
   }
 
   void _filterEquipment() {
+    final searchQuery = _searchController.text.toLowerCase();
     setState(() {
       _filteredEquipment = _allEquipment.where((equipment) {
+        final nameMatch = equipment.name.toLowerCase().contains(searchQuery);
         final categoryMatch = _selectedCategory == null || _selectedCategory == 'All' || equipment.category == _selectedCategory;
         final countryMatch = _selectedCountry == null || equipment.country == _selectedCountry;
         final divisionMatch = _selectedDivision == null || equipment.division == _selectedDivision;
-        return categoryMatch && countryMatch && divisionMatch;
+        return nameMatch && categoryMatch && countryMatch && divisionMatch;
       }).toList();
     });
   }
@@ -130,6 +140,7 @@ class _TractorsPageState extends State<TractorsPage> {
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                 color: const Color(0xFF1B5E20),
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Search tractor',
                     prefixIcon: const Icon(Icons.search),
