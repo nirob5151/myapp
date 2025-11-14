@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/home/models/category.dart';
+import 'package:myapp/features/home/services/category_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,6 +16,7 @@ class HomePage extends StatelessWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           SliverToBoxAdapter(child: _buildHeader(context)),
+          SliverToBoxAdapter(child: _buildQuickActions(context)),
           SliverToBoxAdapter(child: _buildCategories(context)),
           SliverToBoxAdapter(child: _buildFeaturedAdsHeader(context)),
           _buildFeaturedAdsList(context),
@@ -35,13 +38,19 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Farmer Dashboard',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28.0,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Farmer Dashboard',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _buildWeatherWidget(context),
+            ],
           ),
           const SizedBox(height: 20.0),
           TextField(
@@ -61,15 +70,50 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildQuickActions(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildQuickActionButton(
+            context,
+            icon: Icons.add_circle_outline,
+            label: 'Add Equipment',
+            onTap: () => context.go('/add-equipment'),
+          ),
+          _buildQuickActionButton(
+            context,
+            icon: Icons.storefront,
+            label: 'Marketplace',
+            onTap: () => context.go('/marketplace'),
+          ),
+          _buildQuickActionButton(
+            context,
+            icon: Icons.eco,
+            label: 'My Farm',
+            onTap: () => context.go('/my-farm'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton(BuildContext context, {required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFF2C7D32), size: 30.0),
+          const SizedBox(height: 8.0),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCategories(BuildContext context) {
-    final categories = [
-      {'icon': Icons.agriculture, 'label': 'Tractors'},
-      {'icon': Icons.settings_applications, 'label': 'Harvesters'},
-      {'icon': Icons.local_drink, 'label': 'Pumps'},
-      {'icon': Icons.devices_other, 'label': 'Accessories'},
-      {'icon': Icons.add_shopping_cart, 'label': 'Rentals'},
-      {'icon': Icons.more_horiz, 'label': 'More'},
-    ];
+    final categoryService = Provider.of<CategoryService>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -81,40 +125,49 @@ class HomePage extends StatelessWidget {
             style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15.0),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: categories.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 15.0,
-              mainAxisSpacing: 15.0,
-              childAspectRatio: 1.0, // Make items square
-            ),
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return Card(
-                elevation: 2.0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                child: InkWell(
-                  onTap: () {
-                     if (category['label'] == 'Tractors') {
-                      context.go('/tractors');
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(category['icon'] as IconData, size: 40.0, color: const Color(0xFF2C7D32)),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        category['label'] as String,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
+          FutureBuilder<List<Category>>(
+            future: categoryService.getCategories(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No categories found.'));
+              }
+
+              final categories = snapshot.data!;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: categories.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 15.0,
+                  mainAxisSpacing: 15.0,
+                  childAspectRatio: 1.0,
                 ),
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return Card(
+                    elevation: 2.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    child: InkWell(
+                      onTap: () => context.go(category.route),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(category.icon, size: 40.0, color: const Color(0xFF2C7D32)),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            category.label,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
             },
           ),

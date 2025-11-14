@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/app_router.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/home/services/category_service.dart';
 import 'package:myapp/features/user/user_service.dart';
 import 'package:myapp/firebase_options.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         ),
         Provider<UserService>(
           create: (_) => UserService(),
+        ),
+        Provider<CategoryService>(
+          create: (_) => CategoryService(),
         ),
       ],
       child: MaterialApp.router(

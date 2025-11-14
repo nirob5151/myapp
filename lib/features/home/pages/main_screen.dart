@@ -96,8 +96,8 @@ class _MainScreenState extends State<MainScreen> {
                       _buildCategoryCard(context, 'Tractors', Icons.agriculture, () => context.go('/tractors')), 
                       _buildCategoryCard(context, 'Harvesters', Icons.content_cut, () => context.go('/harvesters')), 
                       _buildCategoryCard(context, 'Pumps', Icons.water_drop, () => context.go('/pumps')),
-                      _buildCategoryCard(context, 'Accessories', Icons.category, () {}), 
-                      _buildCategoryCard(context, 'Rentals', Icons.shopping_cart, () {}), 
+                      _buildCategoryCard(context, 'Seeds', Icons.eco, () {}), 
+                      _buildCategoryCard(context, 'Transport Vehicles', Icons.local_shipping, () {}), 
                       _buildCategoryCard(context, 'More', Icons.more_horiz, () {}),
                     ],
                   ),
@@ -135,8 +135,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.agriculture_outlined),
-            label: 'Equipment',
+            icon: Icon(Icons.shopping_cart_outlined),
+            label: 'Rentals',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline),
