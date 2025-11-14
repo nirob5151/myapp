@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -26,13 +28,35 @@ class AuthService {
     }
   }
 
+  Future<String?> getUserCountry(String uid) async {
+    try {
+      final DocumentSnapshot doc =
+          await _firestore.collection('users').doc(uid).get();
+      return doc.get('country') as String?;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String> _getCountry() async {
+    try {
+      final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      final placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      return placemarks.first.country ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   // Create user document in Firestore
   Future<void> _createUserDocument(
-      User user, String name, String email, String role) async {
+      User user, String name, String email, String role, String country) async {
     await _firestore.collection('users').doc(user.uid).set({
       'name': name,
       'email': email,
       'role': role,
+      'country': country,
     });
   }
 
@@ -46,7 +70,8 @@ class AuthService {
       );
       final User? user = result.user;
       if (user != null) {
-        await _createUserDocument(user, name, email, role);
+        final country = await _getCountry();
+        await _createUserDocument(user, name, email, role, country);
         await user.sendEmailVerification();
       }
       return user;
@@ -91,7 +116,8 @@ class AuthService {
         final DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
         if (!doc.exists) {
           // New user, create document
-          await _createUserDocument(user, user.displayName ?? '', user.email ?? '', 'customer');
+          final country = await _getCountry();
+          await _createUserDocument(user, user.displayName ?? '', user.email ?? '', 'customer', country);
         }
       }
 
@@ -103,7 +129,8 @@ class AuthService {
 
   // Set user role (for new Google users)
   Future<void> setUserRole(User user, String role) async {
-    await _createUserDocument(user, user.displayName ?? '', user.email ?? '', role);
+     final country = await _getCountry();
+    await _createUserDocument(user, user.displayName ?? '', user.email ?? '', role, country);
   }
 
   // Sign out
