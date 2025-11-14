@@ -1,1 +1,47 @@
-class CurrencyHelper {\n  static String getCurrencySymbol(String? countryIdentifier) {\n    if (countryIdentifier == null) {\n      return \'€\'; // Default symbol\n    }\n    switch (countryIdentifier) {\n      case \'BD\':\n      case \'Bangladesh\':\n        return \'৳\';\n      case \'IN\':\n      case \'India\':\n        return \'₹\';\n      case \'US\':\n      case \'United States\':\n        return \'\$\';\n      case \'GB\':\n      case \'United Kingdom\':\n        return \'£\';\n      case \'CA\':\n      case \'Canada\':\n        return \'\$\';\n      case \'AU\':\n      case \'Australia\':\n        return \'\$\';\n      case \'DE\':\n      case \'Germany\':\n        return \'€\';\n      case \'FR\':\n      case \'France\':\n        return \'€\';\n      case \'IT\':\n      case \'Italy\':\n        return \'€\';\n      case \'ES\':\n      case \'Spain\':\n        return \'€\';\n      case \'JP\':\n      case \'Japan\':\n        return \'¥\';\n      case \'CN\':\n      case \'China\':\n        return \'¥\';\n      default:\n        return \'€\';\n    }\n  }\n}\n
+class CurrencyHelper {
+  static String getCurrencySymbol(String? countryIdentifier) {
+    if (countryIdentifier == null) {
+      return '€'; // Default symbol
+    }
+    switch (countryIdentifier) {
+      case 'BD':
+      case 'Bangladesh':
+        return '৳';
+      case 'IN':
+      case 'India':
+        return '₹';
+      case 'US':
+      case 'United States':
+        return '\$';
+      case 'GB':
+      case 'United Kingdom':
+        return '£';
+      case 'CA':
+      case 'Canada':
+        return '\$';
+      case 'AU':
+      case 'Australia':
+        return '\$';
+      case 'DE':
+      case 'Germany':
+        return '€';
+      case 'FR':
+      case 'France':
+        return '€';
+      case 'IT':
+      case 'Italy':
+        return '€';
+      case 'ES':
+      case 'Spain':
+        return '€';
+      case 'JP':
+      case 'Japan':
+        return '¥';
+      case 'CN':
+      case 'China':
+        return '¥';
+      default:
+        return '€';
+    }
+  }
+}

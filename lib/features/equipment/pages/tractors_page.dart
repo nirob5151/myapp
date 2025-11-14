@@ -124,12 +124,7 @@ class _TractorsPageState extends State<TractorsPage> {
         title: const Text('Tractor', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
-      body: FutureBuilder<String?>(
-          future: user != null ? authService.getUserCountry(user.uid) : Future.value(null),
-          builder: (context, snapshot) {
-          final countryCode = snapshot.data;
-          final currencySymbol = countryCode != null ? CurrencyHelper.getCurrencySymbol(countryCode) : '€';
-          return Column(
+      body: Column(
             children: [
               Container(
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
@@ -251,6 +246,7 @@ class _TractorsPageState extends State<TractorsPage> {
                       itemCount: _filteredEquipment.length,
                       itemBuilder: (context, index) {
                         final equipment = _filteredEquipment[index];
+                        final currencySymbol = CurrencyHelper.getCurrencySymbol(equipment.country);
                         return Card(
                           elevation: 2.0,
                           color: Colors.white,
@@ -317,9 +313,7 @@ class _TractorsPageState extends State<TractorsPage> {
                     )
               ),
             ],
-          );
-        }
-      ),
+          )
     );
   }
 }
