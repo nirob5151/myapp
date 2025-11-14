@@ -9,6 +9,8 @@ import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/pages/harvesters_page.dart';
 import 'package:myapp/features/equipment/pages/pumps_page.dart';
 import 'package:myapp/features/equipment/pages/tractors_page.dart';
+import 'package:myapp/features/equipment/pages/seeds_page.dart';
+import 'package:myapp/features/equipment/pages/transport_vehicles_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/main_screen.dart';
 import 'package:myapp/go_router_refresh_stream.dart';
@@ -44,6 +46,18 @@ class AppRouter {
         path: '/pumps',
         builder: (BuildContext context, GoRouterState state) {
           return const PumpsPage();
+        },
+      ),
+      GoRoute(
+        path: '/seeds',
+        builder: (BuildContext context, GoRouterState state) {
+          return const SeedsPage();
+        },
+      ),
+      GoRoute(
+        path: '/transport-vehicles',
+        builder: (BuildContext context, GoRouterState state) {
+          return const TransportVehiclesPage();
         },
       ),
       GoRoute(
