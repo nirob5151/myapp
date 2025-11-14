@@ -135,7 +135,7 @@ class HomePage extends StatelessWidget {
     final equipmentService = Provider.of<EquipmentService>(context, listen: false);
 
     return StreamBuilder<List<Equipment>>(
-      stream: equipmentService.getEquipmentStream(),
+      stream: equipmentService.getEquipment(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const SliverToBoxAdapter(

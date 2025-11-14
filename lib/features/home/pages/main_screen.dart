@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/features/chat/pages/chat_page.dart';
-import 'package:myapp/features/crops/pages/crops_page.dart';
+import 'package:myapp/features/equipment/pages/equipment_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 import 'package:myapp/features/profile/pages/profile_page.dart';
 
@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    CropsPage(),
+    EquipmentPage(),
     ChatPage(),
     ProfilePage(),
   ];
@@ -42,9 +42,9 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.grass_outlined),
-            activeIcon: Icon(Icons.grass),
-            label: 'Crops',
+            icon: Icon(Icons.construction_outlined),
+            activeIcon: Icon(Icons.construction),
+            label: 'Equipment',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline),

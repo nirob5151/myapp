@@ -16,4 +16,6 @@ class Equipment {
     required this.ownerId,
     required this.availableDates,
   });
+
+  bool get isAvailable => availableDates.isNotEmpty;
 }
