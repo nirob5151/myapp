@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
         // Live Chat - Placeholder
         break;
       case 3:
-        // Profile - Placeholder
+        context.go('/profile');
         break;
     }
   }

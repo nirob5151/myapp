@@ -30,7 +30,7 @@ class _TractorsPageState extends State<TractorsPage> {
         name: 'Tractor for Rent - Sonalika 750',
         description: 'A powerful and versatile tractor.',
         price: 500,
-        imageUrl: 'https://www.deere.co.uk/assets/images/region-2/products/tractors/8r-series/8r-370/8r_370_r2d082779_large_3206e6402434b32a5384385e5893392a4582f346.jpg',
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Sonalika_DI_750_III_RX_Sikander.jpg',
         ownerId: 'dummy_owner',
         isAvailable: true,
         availableDates: [],
