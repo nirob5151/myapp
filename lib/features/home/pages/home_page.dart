@@ -227,7 +227,7 @@ class HomePage extends StatelessWidget {
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
                             child: Image.network(
-                                    equipment.imageUrl!,
+                                    equipment.imageUrl,
                                     height: 120,
                                     width: double.infinity,
                                     fit: BoxFit.cover,

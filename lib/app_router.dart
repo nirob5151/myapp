@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/screens/signup_screen.dart';
 import 'package:myapp/features/authentication/screens/verify_email_screen.dart';
-import 'package:myapp/features/authentication/screens/welcome_screen.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/pages/harvesters_page.dart';
 import 'package:myapp/features/equipment/pages/pumps_page.dart';
@@ -28,7 +27,7 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const WelcomeScreen();
+          return const LoginPage();
         },
       ),
        GoRoute(

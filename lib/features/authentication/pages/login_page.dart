@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   Future<void> _login() async {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -33,6 +34,12 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(content: Text(e.toString())),
       );
     }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
   @override
@@ -78,6 +85,12 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   hintText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: _togglePasswordVisibility,
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -85,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                obscureText: true,
+                obscureText: _obscureText,
               ),
               const SizedBox(height: 32),
               ElevatedButton(
