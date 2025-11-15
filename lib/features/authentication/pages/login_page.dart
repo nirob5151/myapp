@@ -20,6 +20,9 @@ class _LoginPageState extends State<LoginPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
+      // This will attempt to sign in with the provided text as an email.
+      // For a true "email or phone" login, the backend or a client-side check
+      // would be needed to differentiate and call the appropriate Firebase method.
       await authService.signInWithEmailAndPassword(
         _emailController.text,
         _passwordController.text,
@@ -58,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  hintText: 'Phone number',
+                  hintText: 'Email or Phone number', // Changed hint text
                   prefixIcon: const Icon(Icons.person_outline),
                   filled: true,
                   fillColor: Colors.white,
@@ -67,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                keyboardType: TextInputType.phone,
+                keyboardType: TextInputType.emailAddress, // Changed keyboard type
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -155,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildRoleCard(BuildContext context, String title, String role, IconData icon) {
     return GestureDetector(
-      onTap: () => context.go('/signup?role=$role'),
+      onTap: () => context.push('/signup?role=$role'),
       child: Card(
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),

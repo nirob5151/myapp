@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 
@@ -78,6 +79,7 @@ class ProfilePage extends StatelessWidget {
                 text: 'Sign Out',
                 onPressed: () async {
                   await authService.signOut();
+                  context.go('/');
                 },
               ),
             ],
