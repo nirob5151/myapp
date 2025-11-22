@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/features/authentication/models/user.dart' as app_user;
 import 'package:myapp/features/authentication/repositories/user_repository.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
@@ -120,7 +119,7 @@ class ProfilePage extends StatelessWidget {
               context.go('/home');
               break;
             case 1:
-              // Add navigation to Rentals page
+              context.go('/rentals');
               break;
             case 2:
               // Add navigation to Live Chat page

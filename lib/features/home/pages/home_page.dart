@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              _buildWeatherWidget(context),
+              Container(),
             ],
           ),
           const SizedBox(height: 20.0),

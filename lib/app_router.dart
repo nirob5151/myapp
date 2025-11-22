@@ -13,6 +13,7 @@ import 'package:myapp/features/equipment/pages/transport_vehicles_page.dart';
 import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
 import 'package:myapp/features/home/pages/main_screen.dart';
 import 'package:myapp/features/profile/pages/profile_page.dart';
+import 'package:myapp/features/rentals/pages/my_rentals_page.dart';
 import 'package:myapp/go_router_refresh_stream.dart';
 
 class AppRouter {
@@ -28,6 +29,12 @@ class AppRouter {
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
           return const LoginPage();
+        },
+      ),
+      GoRoute(
+        path: '/rentals',
+        builder: (BuildContext context, GoRouterState state) {
+          return MyRentalsPage();
         },
       ),
        GoRoute(
