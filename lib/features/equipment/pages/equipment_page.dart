@@ -19,7 +19,7 @@ class EquipmentPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Tractor', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Equipment', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
       body: Column(
@@ -29,7 +29,7 @@ class EquipmentPage extends StatelessWidget {
             color: const Color(0xFF1B5E20),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search tractor',
+                hintText: 'Search equipment',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
@@ -131,18 +131,25 @@ class EquipmentPage extends StatelessWidget {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                equipment.imageUrl,
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  width: 80,
-                                  height: 80,
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
-                                ),
-                              ),
+                              child: equipment.imageUrls.isNotEmpty
+                                  ? Image.network(
+                                      equipment.imageUrls.first,
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        width: 80,
+                                        height: 80,
+                                        color: Colors.grey[200],
+                                        child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: Colors.grey[200],
+                                      child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                    ),
                             ),
                             const SizedBox(width: 16.0),
                             Expanded(

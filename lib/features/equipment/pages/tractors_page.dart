@@ -51,7 +51,7 @@ class _TractorsPageState extends State<TractorsPage> {
     _equipmentSubscription = equipmentService.getEquipment().listen((allEquipment) {
       if (mounted) {
         setState(() {
-          _allTractors = allEquipment.where((e) => e.category.toLowerCase() == 'tractors').toList();
+          _allTractors = allEquipment.where((e) => e.category.toLowerCase() == 'tractor').toList();
           _filterEquipment();
           _isLoading = false;
         });
@@ -249,18 +249,25 @@ class _TractorsPageState extends State<TractorsPage> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        equipment.imageUrl,
-                                        width: 80,
-                                        height: 80,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          width: 80,
-                                          height: 80,
-                                          color: Colors.grey[200],
-                                          child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
-                                        ),
-                                      ),
+                                      child: equipment.imageUrls.isNotEmpty
+                                          ? Image.network(
+                                              equipment.imageUrls.first,
+                                              width: 80,
+                                              height: 80,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => Container(
+                                                width: 80,
+                                                height: 80,
+                                                color: Colors.grey[200],
+                                                child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                              ),
+                                            )
+                                          : Container(
+                                              width: 80,
+                                              height: 80,
+                                              color: Colors.grey[200],
+                                              child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                            ),
                                     ),
                                     const SizedBox(width: 16.0),
                                     Expanded(

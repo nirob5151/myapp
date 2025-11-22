@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/pages/registration_page.dart';
+import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/pages/equipment_detail_page.dart';
 import 'package:myapp/features/equipment/pages/harvesters_page.dart';
@@ -33,15 +34,13 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           return const HomePage();
         },
-        routes: [
-          GoRoute(
-            path: 'equipment/:id',
-            builder: (BuildContext context, GoRouterState state) {
-              final id = state.pathParameters['id']!;
-              return EquipmentDetailPage(equipmentId: id);
-            },
-          ),
-        ],
+      ),
+      GoRoute(
+        path: '/equipment/:id',
+        builder: (BuildContext context, GoRouterState state) {
+          final equipment = state.extra as Equipment;
+          return EquipmentDetailPage(equipment: equipment);
+        },
       ),
       GoRoute(
         path: '/register',

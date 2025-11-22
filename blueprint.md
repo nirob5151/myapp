@@ -1,80 +1,45 @@
-# Project Blueprint
+# Farmer App Blueprint
 
-## App Name: EasyFarm — Smart Equipment Rentals
+## Overview
 
-## App Concept:
-EasyFarm is a mobile platform that connects farmers with agricultural equipment owners for renting or leasing farm machinery such as tractors, harvesters, irrigation pumps, and more.
-It helps small and medium-scale farmers access modern tools without large upfront costs, while owners earn by renting out their idle equipment.
+This application is a marketplace for renting and listing agricultural equipment. It allows users to browse and search for equipment, view details, and contact owners. The app is built with Flutter and uses Firebase for backend services.
 
-## Key Features:
+## Style, Design, and Features
 
-### For Farmers:
+### Implemented (as of this version):
 
-*   Browse equipment (tractors, harvesters, pumps, etc.) by location, price, and availability
-*   View equipment details (specs, photos, rent rate, owner info)
-*   Book equipment and contact owners (call/message)
-*   Track active and past rentals
+*   **Authentication:** User authentication with Firebase.
+*   **Equipment Listings:**
+    *   Display a list of available equipment.
+    *   Search and filter equipment by category, country, and division.
+    *   View detailed information for each piece of equipment.
+    *   Add new equipment listings with images.
+*   **Database:**
+    *   Firestore is used to store equipment data.
+    *   Firebase Storage is used to store equipment images.
+*   **Navigation:**
+    *   GoRouter is used for declarative routing.
+    *   A bottom navigation bar provides easy access to different sections of the app.
+*   **UI/UX:**
+    *   The app uses the Material Design library.
+    *   A custom theme is applied for a consistent look and feel.
+    *   The UI is designed to be responsive and work on different screen sizes.
 
-### For Owners:
+### Current Task: Fix Build Errors
 
-*   Post equipment with photos, description, price, and availability
-*   Manage listings (edit, pause, delete)
-*   Accept or reject booking requests
-*   Track payments and rental history
+**Plan and Steps:**
 
-### Common Features:
-
-*   Login/Signup (Farmer or Owner)
-*   Profile and settings management
-*   Reviews and ratings system
-*   Notifications for booking updates and payments
-
-## Unique Selling Points (USP):
-
-*   Localized support (Bangla + English)
-*   Location-based equipment suggestions
-*   Built-in payment tracking and rental calendar
-*   Promotes shared resource usage (eco-friendly farming)
-
-## Tech Stack Suggestion:
-
-*   **Frontend:** Flutter
-*   **Backend:** Firebase
-*   **Database:** Firestore
-*   **Map Integration:** Google Maps API
-*   **Notifications:** Firebase Cloud Messaging (FCM)
-
-## Current Implementation:
-
-*   **Authentication:**
-    *   The login and sign-up process has been completely redesigned to match the provided UI.
-    *   Users can sign up and log in with their email and password.
-    *   The login screen presents role selection cards ("Farmer" or "Owner") that navigate to the sign-up screen with the role pre-selected.
-    *   The user's name and role are stored in Firestore upon sign-up.
-*   **Equipment:**
-    *   A list of equipment is displayed on the home page.
-    *   Users with the "Owner" role can add new equipment with a name, description, price, and image.
-    *   Equipment data is stored in Firestore, and images are stored in Firebase Storage.
-    *   Users can view the details of each piece of equipment on a dedicated screen.
-    *   The equipment detail screen fetches and displays real data from Firestore, including the owner's name.
-*   **UI:**
-    *   The login and sign-up screens have been rebuilt for a modern, visually appealing look and feel, consistent with the new design.
-    *   The new design features a light green background (`#F5F9F5`), custom-styled text fields, and prominent green buttons (`#3B873E`).
-    *   Role selection on the login page is now presented as large, tappable cards with icons.
-    *   Role selection on the sign-up page uses styled `ChoiceChip` widgets for a seamless user experience.
-    *   The home page displays a list of equipment in a card format.
-*   **Code Quality:**
-    *   File structure for authentication has been reorganized for better clarity (`pages` and `screens`).
-    *   Routing has been updated to support the new authentication flow.
-    *   All analyzer warnings and deprecation issues have been resolved.
-    *   The codebase is clean and follows best practices.
-
-## Next Steps:
-
-*   **Implement Google Sign-In:** The "Continue w/Google" button is currently a placeholder.
-*   **Booking:**
-    *   Allow farmers to book equipment for specific dates.
-    *   Implement a booking system to manage equipment availability.
-*   **User Profiles:**
-    *   Create a profile page for users to view and edit their information.
-    *   Display the user's rental history.
+1.  **Identify the root cause of the build errors:** The `Equipment` model was updated to use a `List<String>` for `imageUrls` instead of a single `String`. This caused type mismatches and `Bad state: No element` errors in several files.
+2.  **Update the affected files:**
+    *   `lib/features/equipment/models/equipment.dart`: Corrected the `Equipment` model to use `List<String> imageUrls`.
+    *   `lib/features/equipment/data/dummy_equipment.dart`: Updated the dummy data to use a list of image URLs.
+    *   `lib/features/equipment/pages/all_equipment_page.dart`: Updated the UI to display the first image from the `imageUrls` list and handle cases where the list is empty.
+    *   `lib/features/equipment/pages/harvesters_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and corrected the category filter.
+    *   `lib/features/equipment/pages/pumps_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and fetch data from the `EquipmentService`.
+    *   `lib/features/equipment/pages/seeds_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, fetch data from the `EquipmentService`, and corrected the category filter.
+    *   `lib/features/equipment/pages/tractors_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and corrected the category filter.
+    *   `lib/features/equipment/pages/transport_vehicles_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, fetch data from the `EquipmentService`, and corrected the category filter.
+    *   `lib/features/home/pages/home_page.dart`: Ensured the featured ads section correctly displays images and handles cases where the `imageUrls` list is empty.
+    *   `lib/features/equipment/pages/add_equipment_page.dart`: Confirmed that the image upload and equipment creation process correctly handles the list of image URLs.
+    *   `lib/features/equipment/services/equipment_service.dart`: Verified that the service correctly serializes and deserializes the `imageUrls` field.
+3.  **Verify the fix:** Ensured the application builds and runs successfully without any errors related to the `imageUrls` field.

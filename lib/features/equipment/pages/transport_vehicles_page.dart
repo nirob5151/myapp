@@ -1,7 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:myapp/features/equipment/data/dummy_equipment.dart';
-import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/features/equipment/helpers/currency_helper.dart';
+import 'package:myapp/features/equipment/models/equipment.dart';
+import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/equipment/services/location_service.dart';
+import 'package:provider/provider.dart';
 
 class TransportVehiclesPage extends StatefulWidget {
   const TransportVehiclesPage({super.key});
@@ -11,140 +17,334 @@ class TransportVehiclesPage extends StatefulWidget {
 }
 
 class _TransportVehiclesPageState extends State<TransportVehiclesPage> {
-  String? _selectedCategory = 'All';
-  String? _selectedCountry = 'All';
-  String? _selectedDivision = 'All';
+  String? _selectedCategory;
+  String? _selectedCountry;
+  String? _selectedDivision;
+  final TextEditingController _searchController = TextEditingController();
+
+  final LocationService _locationService = LocationService();
+  late List<String> _countries;
+  late List<String> _divisions;
+
+  List<Equipment> _allTransportVehicles = [];
+  List<Equipment> _filteredTransportVehicles = [];
+  StreamSubscription<List<Equipment>>? _equipmentSubscription;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _countries = _locationService.getCountries();
+    _divisions = [];
+    _searchController.addListener(_filterEquipment);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadEquipment();
+  }
+
+  void _loadEquipment() {
+    final equipmentService = Provider.of<EquipmentService>(context, listen: false);
+    _equipmentSubscription?.cancel();
+    _equipmentSubscription = equipmentService.getEquipment().listen((allEquipment) {
+      if (mounted) {
+        setState(() {
+          _allTransportVehicles = 
+              allEquipment.where((e) => e.category.toLowerCase() == 'transport vehicle').toList();
+          _filterEquipment();
+          _isLoading = false;
+        });
+      }
+    }, onError: (error) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _equipmentSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _onCountryChanged(String? newValue) {
+    setState(() {
+      _selectedCountry = newValue;
+      _selectedDivision = null;
+      _divisions = _locationService.getDivisions(newValue ?? '');
+      _filterEquipment();
+    });
+  }
+
+  void _filterEquipment() {
+    final searchQuery = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredTransportVehicles = _allTransportVehicles.where((equipment) {
+        final nameMatch = equipment.name.toLowerCase().contains(searchQuery);
+        final subCategoryMatch = _selectedCategory == null ||
+            _selectedCategory == 'All' ||
+            equipment.name.toLowerCase().contains(_selectedCategory!.toLowerCase());
+        final countryMatch =
+            _selectedCountry == null || equipment.country == _selectedCountry;
+        final divisionMatch =
+            _selectedDivision == null || equipment.division == _selectedDivision;
+        return nameMatch && subCategoryMatch && countryMatch && divisionMatch;
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Equipment> transportVehicles = allDummyEquipment.where((e) => e.category == 'Transport Vehicles').toList();
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F5),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: const Color(0xFF3B873E),
-            title: const Text('Transport Vehicles', style: TextStyle(color: Colors.white)),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => context.go('/'),
-            ),
-            pinned: true,
-            floating: true,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(120.0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search vehicles...',
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildDropdown('Category', _selectedCategory, ['All', 'Vans', 'Trucks'], (val) {
-                          setState(() => _selectedCategory = val);
-                        }),
-                        _buildDropdown('Country', _selectedCountry, ['All', 'Ireland'], (val) {
-                          setState(() => _selectedCountry = val);
-                        }),
-                        _buildDropdown('Division', _selectedDivision, ['All', 'Munster', 'Leinster'], (val) {
-                          setState(() => _selectedDivision = val);
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                  ],
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF1B5E20),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.go('/home'),
+          ),
+          title: const Text('Transport Vehicles',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          elevation: 0,
+        ),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+              color: const Color(0xFF1B5E20),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search transport vehicle',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final vehicle = transportVehicles[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  elevation: 2.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(12.0),
-                    leading: Image.network(
-                      vehicle.imageUrl,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_shipping, size: 50, color: Colors.grey),
-                    ),
-                    title: Text(vehicle.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '€${vehicle.price}/day',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3B873E)),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1B5E20),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          hint: const Text('Category',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 14)),
+                          value: _selectedCategory,
+                          items: <String>['All', 'Vans', 'Trucks']
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style:
+                                      const TextStyle(color: Colors.black)),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedCategory = newValue;
+                              _filterEquipment();
+                            });
+                          },
+                          style: const TextStyle(color: Colors.white),
+                          dropdownColor: Colors.white,
+                          icon: const Icon(Icons.keyboard_arrow_down,
+                              color: Colors.white),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          vehicle.isAvailable ? 'Available' : 'Not Available',
-                          style: TextStyle(
-                            color: vehicle.isAvailable ? const Color(0xFF3B873E) : Colors.red,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    onTap: () => context.go('/equipment/${vehicle.id}'),
                   ),
-                );
-              },
-              childCount: transportVehicles.length,
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1B5E20),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          hint: const Text('Country',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 14)),
+                          value: _selectedCountry,
+                          items: _countries.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style:
+                                      const TextStyle(color: Colors.black)),
+                            );
+                          }).toList(),
+                          onChanged: _onCountryChanged,
+                          style: const TextStyle(color: Colors.white),
+                          dropdownColor: Colors.white,
+                          icon: const Icon(Icons.keyboard_arrow_down,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1B5E20),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          hint: const Text('Division',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 14)),
+                          value: _selectedDivision,
+                          items: _divisions.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style:
+                                      const TextStyle(color: Colors.black)),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedDivision = newValue;
+                              _filterEquipment();
+                            });
+                          },
+                          style: const TextStyle(color: Colors.white),
+                          dropdownColor: Colors.white,
+                          icon: const Icon(Icons.keyboard_arrow_down,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdown(String hint, String? value, List<String> items, ValueChanged<String?> onChanged) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1B5E20),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: value,
-            hint: Text(hint, style: const TextStyle(color: Colors.white70)),
-            items: items.map((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item, style: const TextStyle(color: Colors.black)),
-              );
-            }).toList(),
-            onChanged: onChanged,
-            style: const TextStyle(color: Colors.white),
-            dropdownColor: Colors.white,
-            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-          ),
-        ),
-      ),
-    );
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filteredTransportVehicles.isEmpty
+                      ? const Center(child: Text('No transport vehicles found.'))
+                      : ListView.builder(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16.0),
+                        itemCount: _filteredTransportVehicles.length,
+                        itemBuilder: (context, index) {
+                          final equipment = _filteredTransportVehicles[index];
+                          final currencySymbol =
+                              CurrencyHelper.getCurrencySymbol(
+                                  equipment.country);
+                          return Card(
+                            elevation: 2.0,
+                            color: Colors.white,
+                            margin:
+                                const EdgeInsets.symmetric(vertical: 8.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: equipment.imageUrls.isNotEmpty
+                                        ? Image.network(
+                                            equipment.imageUrls.first,
+                                            width: 80,
+                                            height: 80,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) =>
+                                                Container(
+                                              width: 80,
+                                              height: 80,
+                                              color: Colors.grey[200],
+                                              child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                            ),
+                                          )
+                                        : Container(
+                                            width: 80,
+                                            height: 80,
+                                            color: Colors.grey[200],
+                                            child: const Icon(Icons.agriculture, size: 40, color: Colors.grey),
+                                          ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          equipment.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Text(
+                                          '$currencySymbol${equipment.price.toStringAsFixed(0)}/day',
+                                          style: GoogleFonts.notoSans(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.0,
+                                            color: Colors.green[800],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Text(
+                                          equipment.isAvailable
+                                              ? 'Available'
+                                              : 'Not Available',
+                                          style: TextStyle(
+                                            color: equipment.isAvailable
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+            ),
+          ],
+        ));
   }
 }

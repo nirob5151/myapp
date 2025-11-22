@@ -272,7 +272,7 @@ class HomePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final equipment = equipmentList[index];
                 return GestureDetector(
-                  onTap: () => context.go('/home/equipment/${equipment.id}'),
+                  onTap: () => context.go('/equipment/${equipment.id}', extra: equipment),
                   child: Card(
                     elevation: 3.0,
                     shape: RoundedRectangleBorder(
@@ -286,15 +286,17 @@ class HomePage extends StatelessWidget {
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(15.0)),
-                            child: Image.network(
-                              equipment.imageUrl,
-                              height: 120,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.agriculture,
-                                      size: 120, color: Colors.grey),
-                            ),
+                            child: equipment.imageUrls.isNotEmpty
+                                ? Image.network(
+                                    equipment.imageUrls.first,
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.agriculture,
+                                            size: 120, color: Colors.grey),
+                                  )
+                                : const Icon(Icons.agriculture, size: 120, color: Colors.grey),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),

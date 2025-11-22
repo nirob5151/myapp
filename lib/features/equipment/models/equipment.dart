@@ -5,7 +5,7 @@ class Equipment {
   final String name;
   final String description;
   final double price;
-  final String imageUrl;
+  final List<String> imageUrls;
   final String ownerId;
   final bool isAvailable;
   final List<DateTime> availableDates;
@@ -18,7 +18,7 @@ class Equipment {
     required this.name,
     required this.description,
     required this.price,
-    required this.imageUrl,
+    required this.imageUrls,
     required this.ownerId,
     required this.isAvailable,
     required this.availableDates,
@@ -34,7 +34,7 @@ class Equipment {
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
-      imageUrl: data['imageUrl'] ?? '',
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
       ownerId: data['ownerId'] ?? '',
       isAvailable: data['isAvailable'] ?? false,
       availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((timestamp) => (timestamp as Timestamp).toDate()).toList(),
@@ -49,7 +49,7 @@ class Equipment {
       'name': name,
       'description': description,
       'price': price,
-      'imageUrl': imageUrl,
+      'imageUrls': imageUrls,
       'ownerId': ownerId,
       'isAvailable': isAvailable,
       'availableDates': availableDates.map((date) => Timestamp.fromDate(date)).toList(),
