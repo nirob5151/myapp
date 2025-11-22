@@ -4,7 +4,6 @@ class UserModel {
   final String uid;
   final String name;
   final String email;
-  final String role;
   final String? country;
   final String? division;
 
@@ -12,7 +11,6 @@ class UserModel {
     required this.uid,
     required this.name,
     required this.email,
-    required this.role,
     this.country,
     this.division,
   });
@@ -21,19 +19,24 @@ class UserModel {
     var snapshot = snap.data() as Map<String, dynamic>;
     return UserModel(
       uid: snap.id,
-      name: snapshot['name'],
-      email: snapshot['email'],
-      role: snapshot['role'],
+      name: snapshot['name'] ?? '',
+      email: snapshot['email'] ?? '',
       country: snapshot['country'],
       division: snapshot['division'],
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "email": email,
+        "country": country,
+        "division": division,
+      };
+
   UserModel copyWith({
     String? uid,
     String? name,
     String? email,
-    String? role,
     String? country,
     String? division,
   }) {
@@ -41,17 +44,8 @@ class UserModel {
       uid: uid ?? this.uid,
       name: name ?? this.name,
       email: email ?? this.email,
-      role: role ?? this.role,
       country: country ?? this.country,
       division: division ?? this.division,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'country': country,
-      'division': division,
-    };
   }
 }

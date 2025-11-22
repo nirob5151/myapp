@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 
 class EquipmentDetailPage extends StatelessWidget {
@@ -10,9 +11,21 @@ class EquipmentDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
         title: const Text('Equipment Details'),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border, color: Colors.white),
+            onPressed: () {
+              // TODO: Implement favorite functionality
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -20,18 +33,28 @@ class EquipmentDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (equipment.imageUrls.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: Image.network(
-                    equipment.imageUrls.first,
-                    height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => 
-                      const Icon(Icons.broken_image, size: 100, color: Colors.grey),
-                  ),
-                ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: (equipment.imageUrls.isNotEmpty)
+                    ? Image.network(
+                        equipment.imageUrls.first,
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 250,
+                          width: double.infinity,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.broken_image, size: 100, color: Colors.grey),
+                        ),
+                      )
+                    : Container(
+                        height: 250,
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.agriculture, size: 100, color: Colors.grey),
+                      ),
+              ),
               const SizedBox(height: 24),
               Text(
                 equipment.name,
@@ -81,7 +104,7 @@ class EquipmentDetailPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.message, color: Colors.white),
-                      label: const Text('Sap.', style: TextStyle(color: Colors.white)),
+                      label: const Text('Message', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1B5E20),
                         padding: const EdgeInsets.symmetric(vertical: 16),

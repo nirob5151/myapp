@@ -14,7 +14,9 @@ import 'package:myapp/features/equipment/pages/transport_vehicles_page.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 import 'package:myapp/features/marketplace/pages/marketplace_page.dart';
 import 'package:myapp/features/my_farm/pages/my_farm_page.dart';
+import 'package:myapp/features/my_farm/pages/owner_listings_page.dart';
 import 'package:myapp/features/profile/pages/edit_profile_page.dart';
+import 'package:myapp/features/profile/pages/profile_page.dart'; 
 
 class AppRouter {
   final FirebaseAuth auth;
@@ -36,10 +38,22 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/profile', 
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProfilePage();
+        },
+      ),
+      GoRoute(
         path: '/equipment/:id',
         builder: (BuildContext context, GoRouterState state) {
           final equipment = state.extra as Equipment;
           return EquipmentDetailPage(equipment: equipment);
+        },
+      ),
+       GoRoute(
+        path: '/my-listings',
+        builder: (BuildContext context, GoRouterState state) {
+          return const OwnerListingsPage();
         },
       ),
       GoRoute(
@@ -110,9 +124,12 @@ class AppRouter {
       if (!loggedIn) {
         return loggingIn ? null : '/';
       }
+
+      // If logged in and on a login/register page, redirect to home.
       if (loggingIn) {
         return '/home';
       }
+
       return null;
     },
     refreshListenable: GoRouterRefreshStream(auth.authStateChanges()),

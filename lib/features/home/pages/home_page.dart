@@ -7,8 +7,15 @@ import 'package:myapp/features/home/models/category.dart';
 import 'package:myapp/features/home/services/category_service.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
 
   // Method to seed the database
   void _seedDatabase(BuildContext context) async {
@@ -50,6 +57,20 @@ class HomePage extends StatelessWidget {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        // Already on the home page
+        break;
+      case 1:
+        context.go('/profile');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +83,21 @@ class HomePage extends StatelessWidget {
           SliverToBoxAdapter(child: _buildFeaturedAdsHeader(context)),
           _buildFeaturedAdsList(context),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color(0xFF2C7D32),
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -90,9 +126,6 @@ class HomePage extends StatelessWidget {
                   fontSize: 28.0,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-              CircleAvatar(
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
               ),
             ],
           ),
@@ -135,8 +168,8 @@ class HomePage extends StatelessWidget {
           _buildQuickActionButton(
             context,
             icon: Icons.eco,
-            label: 'My Farm',
-            onTap: () => context.go('/my-farm'),
+            label: 'My Listings',
+            onTap: () => context.go('/my-listings'),
           ),
           _buildQuickActionButton(
             context,

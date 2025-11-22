@@ -12,4 +12,13 @@ class UserRepository {
       return null;
     }
   }
+
+  Stream<UserModel?> getUserStream(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        return UserModel.fromSnap(snapshot);
+      }
+      return null;
+    });
+  }
 }

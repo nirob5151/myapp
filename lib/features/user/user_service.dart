@@ -4,6 +4,15 @@ import 'package:myapp/features/authentication/models/user.dart';
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Stream<UserModel?> getUserStream(String userId) {
+    return _firestore.collection('users').doc(userId).snapshots().map((snap) {
+      if (snap.exists) {
+        return UserModel.fromSnap(snap);
+      }
+      return null;
+    });
+  }
+
   Future<UserModel?> getUser(String userId) async {
     try {
       final doc = await _firestore.collection('users').doc(userId).get();

@@ -175,23 +175,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 8),
                 _buildPasswordStrengthIndicator(),
                 const SizedBox(height: 32),
-                ValueListenableBuilder<String>(
-                  valueListenable: _selectedRole,
-                  builder: (context, value, child) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: _buildRoleChip(context, 'Farmer', value == 'Farmer'),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildRoleChip(context, 'Owner', value == 'Owner'),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _signUp,
                   style: ElevatedButton.styleFrom(

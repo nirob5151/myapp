@@ -8,38 +8,42 @@ This application is a marketplace for renting and listing agricultural equipment
 
 ### Implemented (as of this version):
 
-*   **Authentication:** User authentication with Firebase.
+*   **Authentication:**
+    *   User authentication with Firebase.
+    *   The user's full name is now saved during the signup process and displayed on the profile page.
 *   **Equipment Listings:**
     *   Display a list of available equipment.
     *   Search and filter equipment by category, country, and division.
     *   View detailed information for each piece of equipment.
     *   Add new equipment listings with images.
+*   **Owner (Lender) Section:**
+    *   A dedicated page for owners to view and manage their equipment listings.
+    *   The page fetches and displays only the equipment belonging to the currently logged-in user.
+    *   The UI displays a list of the owner's equipment, including the name, price, and availability status.
+*   **Profile Page:**
+    *   A redesigned, visually appealing UI with a card-based layout.
+    *   A prominent header displaying the user's profile picture, name, and email.
+    *   The profile page now correctly displays user information immediately after signup by receiving the `User` object directly as a navigation parameter, eliminating the previous race condition.
+    *   It then uses the user's `uid` to listen to a stream from Firestore for any subsequent updates.
+    *   Menu items for "Edit Profile," "Rental History," and "Settings" (functionality to be implemented).
+    *   A "Logout" button with a distinct color to signify a destructive action.
 *   **Database:**
     *   Firestore is used to store equipment data.
     *   Firebase Storage is used to store equipment images.
 *   **Navigation:**
     *   GoRouter is used for declarative routing.
+    *   The router has been updated to pass the `User` object to the profile page upon registration.
     *   A bottom navigation bar provides easy access to different sections of the app.
+    *   A back button has been added to the "Add Equipment" page.
 *   **UI/UX:**
     *   The app uses the Material Design library.
     *   A custom theme is applied for a consistent look and feel.
     *   The UI is designed to be responsive and work on different screen sizes.
 
-### Current Task: Fix Build Errors
+### Current Task: Implement Owner Section
 
 **Plan and Steps:**
 
-1.  **Identify the root cause of the build errors:** The `Equipment` model was updated to use a `List<String>` for `imageUrls` instead of a single `String`. This caused type mismatches and `Bad state: No element` errors in several files.
-2.  **Update the affected files:**
-    *   `lib/features/equipment/models/equipment.dart`: Corrected the `Equipment` model to use `List<String> imageUrls`.
-    *   `lib/features/equipment/data/dummy_equipment.dart`: Updated the dummy data to use a list of image URLs.
-    *   `lib/features/equipment/pages/all_equipment_page.dart`: Updated the UI to display the first image from the `imageUrls` list and handle cases where the list is empty.
-    *   `lib/features/equipment/pages/harvesters_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and corrected the category filter.
-    *   `lib/features/equipment/pages/pumps_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and fetch data from the `EquipmentService`.
-    *   `lib/features/equipment/pages/seeds_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, fetch data from the `EquipmentService`, and corrected the category filter.
-    *   `lib/features/equipment/pages/tractors_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, and corrected the category filter.
-    *   `lib/features/equipment/pages/transport_vehicles_page.dart`: Updated the UI to display the first image from the `imageUrls` list, handle cases where the list is empty, fetch data from the `EquipmentService`, and corrected the category filter.
-    *   `lib/features/home/pages/home_page.dart`: Ensured the featured ads section correctly displays images and handles cases where the `imageUrls` list is empty.
-    *   `lib/features/equipment/pages/add_equipment_page.dart`: Confirmed that the image upload and equipment creation process correctly handles the list of image URLs.
-    *   `lib/features/equipment/services/equipment_service.dart`: Verified that the service correctly serializes and deserializes the `imageUrls` field.
-3.  **Verify the fix:** Ensured the application builds and runs successfully without any errors related to the `imageUrls` field.
+1.  **Create Service Method:** Added a `getEquipmentByOwner` method to `EquipmentService` to fetch equipment by the owner's ID.
+2.  **Create Owner Page:** Created a new `OwnerListingsPage` to display the owner's equipment.
+3.  **Integrate Page:** Replaced the "My Farm" navigation with a link to the new `OwnerListingsPage`.

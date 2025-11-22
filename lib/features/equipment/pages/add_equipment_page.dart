@@ -249,7 +249,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  value: _selectedCountry,
+                  initialValue: _selectedCountry,
                   hint: const Text('Select Country'),
                   items: _countries.map((String country) {
                     return DropdownMenuItem<String>(
@@ -261,7 +261,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                   validator: (value) => value == null ? 'Please select a country' : null,
                 ),
                 DropdownButtonFormField<String>(
-                  value: _selectedDivision,
+                  initialValue: _selectedDivision,
                   hint: const Text('Select Division'),
                   items: _divisions.map((String division) {
                     return DropdownMenuItem<String>(

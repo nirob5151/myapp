@@ -7,22 +7,18 @@ class EquipmentService {
   // Get a stream of equipment
   Stream<List<Equipment>> getEquipment() {
     return _firestore.collection('equipment').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return Equipment(
-          id: doc.id,
-          name: data['name'] ?? '',
-          description: data['description'] ?? '',
-          price: (data['price'] ?? 0).toDouble(),
-          imageUrls: List<String>.from(data['imageUrls'] ?? []),
-          ownerId: data['ownerId'] ?? '',
-          isAvailable: data['isAvailable'] ?? true,
-          availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
-          category: data['category'] ?? '',
-          country: data['country'] ?? '',
-          division: data['division'] ?? '',
-        );
-      }).toList();
+      return snapshot.docs.map((doc) => Equipment.fromFirestore(doc)).toList();
+    });
+  }
+
+  // Get a stream of equipment for a specific owner
+  Stream<List<Equipment>> getEquipmentByOwner(String ownerId) {
+    return _firestore
+        .collection('equipment')
+        .where('ownerId', isEqualTo: ownerId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => Equipment.fromFirestore(doc)).toList();
     });
   }
 
@@ -30,54 +26,22 @@ class EquipmentService {
   Future<Equipment?> getEquipmentById(String id) async {
     final doc = await _firestore.collection('equipment').doc(id).get();
     if (doc.exists) {
-      final data = doc.data()!;
-      return Equipment(
-        id: doc.id,
-        name: data['name'] ?? '',
-        description: data['description'] ?? '',
-        price: (data['price'] ?? 0).toDouble(),
-        imageUrls: List<String>.from(data['imageUrls'] ?? []),
-        ownerId: data['ownerId'] ?? '',
-        isAvailable: data['isAvailable'] ?? true,
-        availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((e) => (e as Timestamp).toDate()).toList(),
-        category: data['category'] ?? '',
-        country: data['country'] ?? '',
-        division: data['division'] ?? '',
-      );
+      return Equipment.fromFirestore(doc);
     }
     return null;
   }
 
   // Add a new piece of equipment
-  Future<void> addEquipment(Equipment equipment) {
-    return _firestore.collection('equipment').add({
-      'name': equipment.name,
-      'description': equipment.description,
-      'price': equipment.price,
-      'imageUrls': equipment.imageUrls,
-      'ownerId': equipment.ownerId,
-      'isAvailable': equipment.isAvailable,
-      'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
-      'category': equipment.category,
-      'country': equipment.country,
-      'division': equipment.division,
-    });
+  Future<DocumentReference> addEquipment(Equipment equipment) {
+    return _firestore.collection('equipment').add(equipment.toFirestore());
   }
 
   // Update an existing piece of equipment
   Future<void> updateEquipment(Equipment equipment) {
-    return _firestore.collection('equipment').doc(equipment.id).update({
-      'name': equipment.name,
-      'description': equipment.description,
-      'price': equipment.price,
-      'imageUrls': equipment.imageUrls,
-      'ownerId': equipment.ownerId,
-      'isAvailable': equipment.isAvailable,
-      'availableDates': equipment.availableDates.map((e) => Timestamp.fromDate(e)).toList(),
-      'category': equipment.category,
-      'country': equipment.country,
-      'division': equipment.division,
-    });
+    return _firestore
+        .collection('equipment')
+        .doc(equipment.id)
+        .update(equipment.toFirestore());
   }
 
   // Delete a piece of equipment
