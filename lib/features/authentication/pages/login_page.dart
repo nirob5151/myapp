@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
@@ -14,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _rememberMe = false;
 
   Future<void> _login() async {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -21,9 +23,6 @@ class _LoginPageState extends State<LoginPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
-      // This will attempt to sign in with the provided text as an email.
-      // For a true "email or phone" login, the backend or a client-side check
-      // would be needed to differentiate and call the appropriate Firebase method.
       await authService.signInWithEmailAndPassword(
         _emailController.text,
         _passwordController.text,
@@ -40,6 +39,31 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+  void _toggleRememberMe(bool? value) {
+    if (value != null) {
+      setState(() {
+        _rememberMe = value;
+      });
+    }
+  }
+
+  Future<void> _resetPassword() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await authService.sendPasswordResetEmail(_emailController.text);
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Password reset email sent. Please check your inbox.'),
+        ),
+      );
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   @override
@@ -68,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  hintText: 'Email or Phone number', // Changed hint text
+                  hintText: 'Email',
                   prefixIcon: const Icon(Icons.person_outline),
                   filled: true,
                   fillColor: Colors.white,
@@ -77,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                keyboardType: TextInputType.emailAddress, // Changed keyboard type
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -100,7 +124,29 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 obscureText: _obscureText,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        onChanged: _toggleRememberMe,
+                      ),
+                      const Text('Remember Me'),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: _resetPassword,
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Color(0xFF3B873E)),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _login,
                 style: ElevatedButton.styleFrom(

@@ -8,9 +8,12 @@ import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
+import 'package:myapp/features/home/services/category_service.dart';
 import 'package:myapp/features/user/user_service.dart';
 import 'package:provider/provider.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+
+import 'mocks.dart';
 
 // A helper function to create the app with all necessary providers for testing.
 Widget createTestableWidget({required Widget child, required FirebaseAuth auth}) {
@@ -18,7 +21,8 @@ Widget createTestableWidget({required Widget child, required FirebaseAuth auth})
   return MultiProvider(
     providers: [
       Provider<AuthService>(create: (_) => AuthService(auth: auth, firestore: firestore)),
-      Provider<EquipmentService>(create: (_) => EquipmentService()),
+      Provider<EquipmentService>(create: (_) => MockEquipmentService()),
+      Provider<CategoryService>(create: (_) => MockCategoryService()),
       Provider<UserService>(create: (_) => UserService()),
     ],
     child: child,

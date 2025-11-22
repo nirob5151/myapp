@@ -2,29 +2,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
-import 'package:myapp/features/authentication/screens/signup_screen.dart';
-import 'package:myapp/features/authentication/screens/verify_email_screen.dart';
+import 'package:myapp/features/authentication/pages/registration_page.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
+import 'package:myapp/features/equipment/pages/equipment_detail_page.dart';
 import 'package:myapp/features/equipment/pages/harvesters_page.dart';
 import 'package:myapp/features/equipment/pages/pumps_page.dart';
-import 'package:myapp/features/equipment/pages/tractors_page.dart';
 import 'package:myapp/features/equipment/pages/seeds_page.dart';
+import 'package:myapp/features/equipment/pages/tractors_page.dart';
 import 'package:myapp/features/equipment/pages/transport_vehicles_page.dart';
-import 'package:myapp/features/equipment/screens/equipment_detail_screen.dart';
-import 'package:myapp/features/home/pages/main_screen.dart';
-import 'package:myapp/features/profile/pages/profile_page.dart';
-import 'package:myapp/features/rentals/pages/my_rentals_page.dart';
-import 'package:myapp/go_router_refresh_stream.dart';
+import 'package:myapp/features/home/pages/home_page.dart';
+import 'package:myapp/features/marketplace/pages/marketplace_page.dart';
+import 'package:myapp/features/my_farm/pages/my_farm_page.dart';
+import 'package:myapp/features/profile/pages/edit_profile_page.dart';
 
 class AppRouter {
   final FirebaseAuth auth;
 
   AppRouter({required this.auth});
 
-  late final router = GoRouter(
-    refreshListenable: GoRouterRefreshStream(auth.authStateChanges()),
-    initialLocation: '/',
-    routes: <RouteBase>[
+  late final GoRouter router = GoRouter(
+    routes: <GoRoute>[
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
@@ -32,12 +29,27 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/rentals',
+        path: '/home',
         builder: (BuildContext context, GoRouterState state) {
-          return MyRentalsPage();
+          return const HomePage();
+        },
+        routes: [
+          GoRoute(
+            path: 'equipment/:id',
+            builder: (BuildContext context, GoRouterState state) {
+              final id = state.pathParameters['id']!;
+              return EquipmentDetailPage(equipmentId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (BuildContext context, GoRouterState state) {
+          return const RegistrationPage();
         },
       ),
-       GoRoute(
+      GoRoute(
         path: '/tractors',
         builder: (BuildContext context, GoRouterState state) {
           return const TractorsPage();
@@ -49,7 +61,7 @@ class AppRouter {
           return const HarvestersPage();
         },
       ),
-      GoRoute(
+       GoRoute(
         path: '/pumps',
         builder: (BuildContext context, GoRouterState state) {
           return const PumpsPage();
@@ -68,84 +80,49 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/login',
-        builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
-        },
-      ),
-       GoRoute(
-        path: '/profile',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ProfilePage();
-        },
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (BuildContext context, GoRouterState state) {
-          final role = state.uri.queryParameters['role'];
-          return SignUpScreen(role: role);
-        },
-      ),
-      GoRoute(
-        path: '/verify-email',
-        builder: (BuildContext context, GoRouterState state) {
-          return const VerifyEmailScreen();
-        },
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (BuildContext context, GoRouterState state) {
-          return const MainScreen(); // Main entry point for authenticated users
-        },
-        routes: [
-          GoRoute(
-            path: 'equipment/:id',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return EquipmentDetailScreen(equipmentId: id);
-            },
-          ),
-        ],
-      ),
-      GoRoute(
         path: '/add-equipment',
         builder: (BuildContext context, GoRouterState state) {
           return const AddEquipmentPage();
         },
       ),
+      GoRoute(
+        path: '/my-farm',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MyFarmPage();
+        },
+      ),
+      GoRoute(
+        path: '/marketplace',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MarketplacePage();
+        },
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EditProfilePage();
+        },
+      ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final user = auth.currentUser;
-      final bool loggedIn = user != null;
-      final bool emailVerified = user?.emailVerified ?? false;
+      final bool loggedIn = auth.currentUser != null;
+      final bool loggingIn = state.matchedLocation == '/' || state.matchedLocation == '/register';
 
-      final String location = state.matchedLocation;
-      final bool isAtAuthScreen = location == '/' || location == '/login' || location == '/signup';
-      final bool isAtVerifyScreen = location == '/verify-email';
-
-      // Case 1: User is not logged in.
       if (!loggedIn) {
-        // If they are already on an auth screen, let them stay. Otherwise, redirect to welcome.
-        return isAtAuthScreen ? null : '/';
+        return loggingIn ? null : '/';
       }
-
-      // Case 2: User is logged in.
-      // A) Email is not verified.
-      if (!emailVerified) {
-        // If they are not on the verify screen, send them there.
-        return isAtVerifyScreen ? null : '/verify-email';
+      if (loggingIn) {
+        return '/home';
       }
-
-      // B) Email is verified.
-      if (emailVerified) {
-        // If they are on an auth screen or the verify screen, send them home.
-        if (isAtAuthScreen || isAtVerifyScreen) {
-          return '/home';
-        }
-      }
-
-      // Otherwise, no redirect needed.
       return null;
     },
+    refreshListenable: GoRouterRefreshStream(auth.authStateChanges()),
   );
+}
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<User?> stream) {
+    notifyListeners();
+    stream.listen((_) => notifyListeners());
+  }
 }

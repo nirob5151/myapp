@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
+import 'package:myapp/features/authentication/utils/password_strength.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -17,11 +18,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late final ValueNotifier<String> _selectedRole;
+  PasswordStrength _passwordStrength = PasswordStrength.weak;
+  bool _obscureText = true;
 
   @override
   void initState() {
     super.initState();
     _selectedRole = ValueNotifier<String>(widget.role ?? 'Farmer');
+    _passwordController.addListener(_updatePasswordStrength);
+  }
+
+  @override
+  void dispose() {
+    _passwordController.removeListener(_updatePasswordStrength);
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _updatePasswordStrength() {
+    setState(() {
+      _passwordStrength = checkPasswordStrength(_passwordController.text);
+    });
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
   Future<void> _signUp() async {
@@ -123,6 +148,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     hintText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -130,17 +161,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscureText,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters';
                     }
                     return null;
                   },
                 ),
+                const SizedBox(height: 8),
+                _buildPasswordStrengthIndicator(),
                 const SizedBox(height: 32),
                 ValueListenableBuilder<String>(
                   valueListenable: _selectedRole,
@@ -178,6 +211,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPasswordStrengthIndicator() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        LinearProgressIndicator(
+          value: _passwordStrength == PasswordStrength.strong
+              ? 1.0
+              : _passwordStrength == PasswordStrength.medium
+                  ? 0.6
+                  : 0.3,
+          backgroundColor: Colors.grey[300],
+          valueColor: AlwaysStoppedAnimation<Color>(
+            _passwordStrength == PasswordStrength.strong
+                ? Colors.green
+                : _passwordStrength == PasswordStrength.medium
+                    ? Colors.orange
+                    : Colors.red,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Password Strength: ${_passwordStrength.toString().split('.').last}',
+          style: TextStyle(
+            color: _passwordStrength == PasswordStrength.strong
+                ? Colors.green
+                : _passwordStrength == PasswordStrength.medium
+                    ? Colors.orange
+                    : Colors.red,
+          ),
+        ),
+      ],
     );
   }
 

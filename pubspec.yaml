@@ -25,8 +25,8 @@ dependencies:
   flutter_svg: ^2.2.1
   get: ^4.7.2
   intl: ^0.20.2
-  image_picker: ^1.2.0
-  firebase_storage: ^13.0.3
+  image_picker: ^1.2.1
+  firebase_storage: ^13.0.4
   geocoding: ^4.0.0
 
 dev_dependencies:

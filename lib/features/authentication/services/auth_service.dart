@@ -127,6 +127,15 @@ class AuthService {
     }
   }
 
+  // Password Reset
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Set user role (for new Google users)
   Future<void> setUserRole(User user, String role) async {
      final country = await _getCountry();

@@ -87,7 +87,7 @@ class ProfilePage extends StatelessWidget {
                   _buildProfileButton(
                     text: 'Edit Profile',
                     onPressed: () {
-                      // Navigate to edit profile page
+                      context.go('/edit-profile');
                     },
                   ),
                   const SizedBox(height: 16),
