@@ -17,9 +17,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   late final ValueNotifier<String> _selectedRole;
   PasswordStrength _passwordStrength = PasswordStrength.weak;
-  bool _obscureText = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -45,7 +48,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _togglePasswordVisibility() {
     setState(() {
-      _obscureText = !_obscureText;
+      _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _obscureConfirmPassword = !_obscureConfirmPassword;
     });
   }
 
@@ -95,9 +104,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ValueListenableBuilder<String>(
+                  valueListenable: _selectedRole,
+                  builder: (context, value, child) {
+                    return Text(
+                      'Create $value Account',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    );
+                  },
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
@@ -150,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: _togglePasswordVisibility,
                     ),
@@ -161,7 +175,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  obscureText: _obscureText,
+                  obscureText: _obscurePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -174,6 +188,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 8),
                 _buildPasswordStrengthIndicator(),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: InputDecoration(
+                    hintText: 'Confirm Password',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: _toggleConfirmPasswordVisibility,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  obscureText: _obscureConfirmPassword,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _signUp,
@@ -228,32 +272,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildRoleChip(BuildContext context, String role, bool isSelected) {
-    return ChoiceChip(
-      label: SizedBox(
-        width: double.infinity,
-        child: Center(child: Text(role)),
-      ),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          _selectedRole.value = role;
-        }
-      },
-      selectedColor: const Color(0xFF3B873E),
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : Colors.black,
-      ),
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        side: BorderSide(
-          color: isSelected ? const Color(0xFF3B873E) : Colors.grey[300]!,
-        ),
-      ),
     );
   }
 }

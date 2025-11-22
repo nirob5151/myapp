@@ -14,14 +14,32 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscureText = true;
+  bool _isLoading = false;
 
-  Future<void> _signInWithEmail() async {
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  Future<void> _login() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
     final authService = Provider.of<AuthService>(context, listen: false);
-    final router = GoRouter.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
@@ -29,129 +47,123 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text,
         _passwordController.text,
       );
-      if (user != null) {
-        router.go('/');
-      }
+      // Let the stream handle navigation
     } catch (e) {
       scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final router = GoRouter.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-    try {
-      final user = await authService.signInWithGoogle();
-      if (user != null) {
-        final role = await authService.getUserRole(user.uid);
-        if (role == null) {
-          // New user, prompt for role
-          // ignore: use_build_context_synchronously
-          if (!mounted) return;
-          await _showRoleSelectionDialog(user);
-        } else {
-          router.go('/');
-        }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
-    } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
-  }
-
-  Future<void> _showRoleSelectionDialog(dynamic user) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final router = GoRouter.of(context);
-    String? selectedRole;
-
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Select Your Role'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('Farmer'),
-                onTap: () {
-                  selectedRole = 'Farmer';
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                title: const Text('Owner'),
-                onTap: () {
-                  selectedRole = 'Owner';
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (selectedRole != null) {
-      await authService.setUserRole(user, selectedRole!);
-      router.go('/');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
+      backgroundColor: const Color(0xFFF5F9F5),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Welcome Back',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF2C7D32)),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Sign in to continue',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 40),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: _togglePasswordVisibility,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    obscureText: _obscureText,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B873E),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Login',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => context.go('/register'),
+                    child: const Text(
+                      'Don\'t have an account? Sign Up',
+                      style: TextStyle(color: Color(0xFF3B873E)),
+                    ),
+                  ),
+                ],
               ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signInWithEmail,
-                child: const Text('Login'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signInWithGoogle,
-                child: const Text('Continue with Google'),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () => context.go('/signup'),
-                child: const Text('Don\'t have an account? Sign up'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

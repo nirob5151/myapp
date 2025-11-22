@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/pages/login_page.dart';
 import 'package:myapp/features/authentication/pages/registration_page.dart';
+import 'package:myapp/features/authentication/screens/signup_screen.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
 import 'package:myapp/features/equipment/pages/equipment_detail_page.dart';
@@ -63,6 +64,13 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/signup',
+        builder: (BuildContext context, GoRouterState state) {
+          final role = state.extra as String?;
+          return SignUpScreen(role: role);
+        },
+      ),
+      GoRoute(
         path: '/tractors',
         builder: (BuildContext context, GoRouterState state) {
           return const TractorsPage();
@@ -119,7 +127,7 @@ class AppRouter {
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final bool loggedIn = auth.currentUser != null;
-      final bool loggingIn = state.matchedLocation == '/' || state.matchedLocation == '/register';
+      final loggingIn = state.matchedLocation == '/' || state.matchedLocation == '/register' || state.matchedLocation == '/signup';
 
       if (!loggedIn) {
         return loggingIn ? null : '/';
