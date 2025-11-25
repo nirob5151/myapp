@@ -1,65 +1,80 @@
 # Agri-Rental App Blueprint
 
-## Overview
+## App Overview
 
-Agri-Rental is a mobile application designed to connect farmers who need to rent agricultural equipment with equipment owners. The app provides a platform for owners to list their equipment and for farmers to browse and rent available items.
+Agri-Rental is a mobile application that connects farmers who need agricultural equipment with owners who have equipment available for rent. The app facilitates the entire rental process, from browsing and booking to communication and payment.
 
-## Current Plan: Farmer Experience Overhaul
+## Features
 
-This phase focuses on building a comprehensive and intuitive experience for farmers, from discovering equipment to managing bookings.
+### Implemented
 
-### 1. Farmer Dashboard
+*   **Farmer Dashboard:** A home screen for farmers to browse equipment categories and featured ads.
+*   **Theme Toggle:** Light and dark mode support.
+*   **User Authentication:** Secure login with Google Sign-In.
+*   **Real-time Chat:** In-app messaging between farmers and owners using Firebase.
 
-*   **Goal:** Replace the current simple list of equipment with a user-friendly dashboard that organizes equipment by category.
-*   **Implementation:**
-    *   The Farmer's home page will display a grid of equipment categories (e.g., "Tractors", "Harvesters", "Plows").
-    *   Create a `Category` model and a `CategoryService` to fetch categories from Firestore.
+### Planned
 
-### 2. Equipment Discovery
+*   **Equipment Listings:** Detailed pages for each piece of equipment.
+*   **Booking System:** A complete system for requesting, accepting, and managing rentals.
+*   **Payment Integration:** Secure payment processing for rentals.
+*   **Notifications:** Real-time alerts for booking requests and updates.
+*   **User Profiles:** Profiles for farmers and owners with their rental history and ratings.
+*   **Map Integration:** Displaying equipment and rental locations on a map.
 
-*   **Goal:** Allow farmers to easily find the equipment they need.
-*   **Flow:** Category -> Equipment List -> Equipment Details.
-*   **Implementation:**
-    *   **Equipment List:** Tapping a category will navigate to a page showing all equipment in that category.
-    *   **Equipment Details Page:** A rich view with:
-        *   Image gallery/carousel.
-        *   Rental price (per hour/day).
-        *   Availability calendar.
-        *   Technical specifications.
-        *   Owner information (name, profile link).
-        *   Detailed description and terms of use.
+## Farmer User Story
 
-### 3. Booking System
+1.  **Browse and Discover:**
+    *   The farmer opens the app and sees a dashboard with equipment categories (e.g., Tractors, Harvesters, Pumps) and featured ads.
+    *   The farmer can search for specific equipment.
 
-*   **Goal:** Implement a full booking workflow.
-*   **Implementation:**
-    *   **Booking Request:** Farmers can request to book equipment by selecting dates, times, duration, and a delivery location.
-    *   **Booking Model:** Create a `Booking` model with a defined lifecycle.
-    *   **Booking Lifecycle:** The status of a booking will be tracked in Firestore: `Pending`, `Accepted`, `Rejected`, `Ongoing`, `Completed`.
-    *   **Communication:**
-        *   **Chat:** Farmers can chat with the equipment owner for inquiries.
-        *   **Call:** A button to initiate a phone call with the owner.
+2.  **View Equipment Listings:**
+    *   The farmer taps on a category to see a list of available equipment in that category.
+    *   Each item in the list displays the equipment name, image, price, availability, and location.
 
-### 4. Farmer Profile
+3.  **Explore Equipment Details:**
+    *   The farmer taps on an equipment card to view a detailed page with:
+        *   An image slider with multiple pictures of the equipment.
+        *   Detailed pricing (per hour, day, week).
+        *   An availability calendar.
+        *   Technical specifications (e.g., power, model, fuel type).
+        *   Owner information (name, contact details).
+        *   The equipment's location on a map.
+        *   A detailed description and terms and conditions.
 
-*   **Goal:** Provide farmers with a dedicated space to manage their information and bookings.
-*   **Implementation:**
-    *   A profile page where farmers can:
-        *   Edit their personal information.
-        *   View their complete booking history (past and upcoming).
-        *   Select their preferred language for the app.
+4.  **Book Equipment:**
+    *   The farmer can request a booking by selecting the desired date, time, duration, and rental location.
+    *   The farmer can also chat with the owner or call them directly from the app.
 
-## Implemented Features
+5.  **Manage Bookings:**
+    *   The farmer receives a notification when the owner accepts or rejects the booking request.
+    *   The farmer can track the status of their bookings (e.g., pending, confirmed, completed).
+    *   The farmer can view their rental history.
 
-*   **Authentication:** User roles (`Farmer`, `Owner`), sign-up, and login.
-*   **UI/UX:** Custom theme, dark/light mode toggle, modern design.
-*   **Owner Role:** A basic interface to view and add equipment.
-*   **Project Structure:** A scalable feature-first project structure.
-*   **Bug Fix:** Resolved a crash on the farmer's home page related to missing rental prices.
+## Owner User Story
 
-## Future Plans
+1.  **List Equipment:**
+    *   The owner can create a new equipment listing by providing all the necessary details, including images, pricing, and specifications.
 
-*   Advanced search and filtering.
-*   User ratings and reviews.
-*   Payment integration.
-*   Geolocation and notifications.
+2.  **Manage Listings:**
+    *   The owner can view, edit, or delete their equipment listings.
+    *   The owner can set the availability of their equipment on a calendar.
+
+3.  **Handle Booking Requests:**
+    *   The owner receives a notification when a farmer requests to book their equipment.
+    *   The owner can review the request and either accept or reject it.
+
+4.  **Communicate with Farmers:**
+    *   The owner can chat with farmers in real-time to answer questions and coordinate rentals.
+
+5.  **Track Earnings:**
+    *   The owner can track their earnings from rentals.
+
+## Technical Details
+
+*   **Frontend:** Flutter
+*   **Backend:** Firebase (Firestore, Authentication, Storage, Cloud Firestore)
+*   **State Management:** Provider
+*   **Routing:** GoRouter
+*   **Authentication:** Google Sign-In
+*   **Chat:** Cloud Firestore

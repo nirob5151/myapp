@@ -13,5 +13,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, create, update: if request.auth != null && request.auth.uid == userId;
     }
+
+    // Allow users to read and write messages in their own chats
+    match /chats/{chatId}/messages/{messageId} {
+      allow read, create: if request.auth != null && chatId.split('_').contains(request.auth.uid);
+    }
   }
 }

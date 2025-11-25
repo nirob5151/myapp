@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/features/owner/services/equipment_service.dart';
+import 'package:myapp/models/category.dart';
 import 'package:myapp/models/equipment.dart';
+import 'package:myapp/services/category_service.dart';
 
 class AddEquipmentPage extends StatefulWidget {
   const AddEquipmentPage({super.key});
@@ -15,6 +17,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _rentalPriceController = TextEditingController();
+  final _imageUrlController = TextEditingController();
+  String? _selectedCategoryId;
   bool _isLoading = false;
 
   @override
@@ -22,6 +26,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
     _nameController.dispose();
     _descriptionController.dispose();
     _rentalPriceController.dispose();
+    _imageUrlController.dispose();
     super.dispose();
   }
 
@@ -44,6 +49,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
         description: _descriptionController.text,
         rentalPrice: double.parse(_rentalPriceController.text),
         ownerId: user.uid,
+        categoryId: _selectedCategoryId!,
+        imageUrl: _imageUrlController.text,
       );
 
       await equipmentService.addEquipment(newEquipment);
@@ -67,6 +74,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryService = CategoryService();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add New Equipment'),
@@ -88,6 +97,39 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                     return 'Please enter the equipment name';
                   }
                   return null;
+                },
+              ),
+              const SizedBox(height: 16.0),
+              StreamBuilder<List<Category>>(
+                stream: categoryService.getCategories(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final categories = snapshot.data!;
+                  return DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Category',
+                    ),
+                    value: _selectedCategoryId,
+                    items: categories.map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category.id,
+                        child: Text(category.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategoryId = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a category';
+                      }
+                      return null;
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16.0),
@@ -114,6 +156,19 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the rental price';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'Image URL',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an image URL';
                   }
                   return null;
                 },

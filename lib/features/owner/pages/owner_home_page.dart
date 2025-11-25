@@ -62,7 +62,7 @@ class OwnerHomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.go('/add_equipment');
+          context.go('/owner_home/add_equipment');
         },
         child: const Icon(Icons.add),
       ),

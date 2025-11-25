@@ -9,9 +9,9 @@ class EquipmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 2.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -19,8 +19,8 @@ class EquipmentCard extends StatelessWidget {
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
+                topLeft: Radius.circular(12.0),
+                topRight: Radius.circular(12.0),
               ),
               child: equipment.imageUrl.isNotEmpty
                   ? Image.network(
@@ -47,10 +47,20 @@ class EquipmentCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  '\$${equipment.rentalPrice.toStringAsFixed(2)} / day',
+                  '${equipment.rentalPrice.toStringAsFixed(0)} BDT/day',
                   style: const TextStyle(
                     fontSize: 14.0,
                     color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  equipment.isAvailable ? 'Available' : 'Unavailable',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: equipment.isAvailable ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
