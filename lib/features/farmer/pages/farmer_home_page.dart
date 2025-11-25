@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:myapp/features/auth/services/auth_service.dart';
 import 'package:myapp/features/farmer/widgets/equipment_card.dart';
 import 'package:myapp/features/owner/services/equipment_service.dart';
-import 'package:myapp/main.dart';
 import 'package:myapp/models/category.dart';
 import 'package:myapp/models/equipment.dart';
 import 'package:myapp/services/category_service.dart';

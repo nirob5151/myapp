@@ -117,7 +117,7 @@ class _SignupPageState extends State<SignupPage> {
                             prefixIcon: const Icon(Icons.person_outline),
                             filled: true,
                             fillColor:
-                                theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -139,7 +139,7 @@ class _SignupPageState extends State<SignupPage> {
                             prefixIcon: const Icon(Icons.email_outlined),
                             filled: true,
                             fillColor:
-                                theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -163,7 +163,7 @@ class _SignupPageState extends State<SignupPage> {
                             prefixIcon: const Icon(Icons.lock_outline),
                             filled: true,
                             fillColor:
-                                theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -178,13 +178,13 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         const SizedBox(height: 24.0),
                         DropdownButtonFormField<String>(
-                          value: _selectedRole,
+                          initialValue: _selectedRole,
                           hint: const Text('Select your role'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.work_outline),
                             filled: true,
                             fillColor:
-                                theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,

@@ -12,6 +12,7 @@ Agri-Rental is a mobile application that connects farmers who need agricultural 
 *   **Theme Toggle:** Light and dark mode support.
 *   **User Authentication:** Secure login with Google Sign-In.
 *   **Real-time Chat:** In-app messaging between farmers and owners using Firebase.
+*   **User Profiles:** View and edit user profile information, including name and profile picture.
 
 ### Planned
 
@@ -19,7 +20,6 @@ Agri-Rental is a mobile application that connects farmers who need agricultural 
 *   **Booking System:** A complete system for requesting, accepting, and managing rentals.
 *   **Payment Integration:** Secure payment processing for rentals.
 *   **Notifications:** Real-time alerts for booking requests and updates.
-*   **User Profiles:** Profiles for farmers and owners with their rental history and ratings.
 *   **Map Integration:** Displaying equipment and rental locations on a map.
 
 ## Farmer User Story

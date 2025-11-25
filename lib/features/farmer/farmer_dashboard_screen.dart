@@ -1,11 +1,36 @@
 
 import 'package:flutter/material.dart';
 import 'package:myapp/features/category/category_screen.dart';
+import 'package:myapp/features/profile/profile_screen.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class FarmerDashboardScreen extends StatelessWidget {
+class FarmerDashboardScreen extends StatefulWidget {
   const FarmerDashboardScreen({super.key});
+
+  @override
+  State<FarmerDashboardScreen> createState() => _FarmerDashboardScreenState();
+}
+
+class _FarmerDashboardScreenState extends State<FarmerDashboardScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const FarmerHomePage(),
+    const CategoryScreen(categoryName: 'Equipment'),
+    const Scaffold(
+      body: Center(
+        child: Text('Live Chat Screen - Coming Soon!'),
+      ),
+    ),
+    const ProfileScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,114 +63,7 @@ class FarmerDashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: const TextField(
-                decoration: InputDecoration(
-                  hintText: 'tractors, harvesters, pumps...',
-                  border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Categories',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.0,
-              ),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                final categories = [
-                  {'icon': Icons.agriculture, 'label': 'Tractors'},
-                  {'icon': Icons.settings, 'label': 'Harvesters'},
-                  {'icon': Icons.local_drink, 'label': 'Pumps'},
-                  {'icon': Icons.widgets, 'label': 'Accessories'},
-                  {'icon': Icons.shopping_cart, 'label': 'Rentals'},
-                  {'icon': Icons.more_horiz, 'label': 'More'},
-                ];
-                return CategoryCard(
-                  icon: categories[index]['icon'] as IconData,
-                  label: categories[index]['label'] as String,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CategoryScreen(
-                          categoryName: categories[index]['label'] as String,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Featured Ads',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 200,
-            margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(10),
-              image: const DecorationImage(
-                image: NetworkImage('https://loremflickr.com/640/480/farm'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: const Center(
-              child: Text(
-                'Featured Ad',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  backgroundColor: Colors.black45,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -165,12 +83,129 @@ class FarmerDashboardScreen extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: _selectedIndex,
         selectedItemColor: Colors.green[800],
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
       ),
+    );
+  }
+}
+
+class FarmerHomePage extends StatelessWidget {
+  const FarmerHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: const TextField(
+              decoration: InputDecoration(
+                hintText: 'tractors, harvesters, pumps...',
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Categories',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: 6,
+            itemBuilder: (context, index) {
+              final categories = [
+                {'icon': Icons.agriculture, 'label': 'Tractors'},
+                {'icon': Icons.settings, 'label': 'Harvesters'},
+                {'icon': Icons.local_drink, 'label': 'Pumps'},
+                {'icon': Icons.widgets, 'label': 'Accessories'},
+                {'icon': Icons.shopping_cart, 'label': 'Rentals'},
+                {'icon': Icons.more_horiz, 'label': 'More'},
+              ];
+              return CategoryCard(
+                icon: categories[index]['icon'] as IconData,
+                label: categories[index]['label'] as String,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                        categoryName: categories[index]['label'] as String,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Featured Ads',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          height: 200,
+          margin: const EdgeInsets.symmetric(horizontal: 16.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+            image: const DecorationImage(
+              image: NetworkImage('https://loremflickr.com/640/480/farm'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: const Center(
+            child: Text(
+              'Featured Ad',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.black45,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }

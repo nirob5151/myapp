@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                                   const Icon(Icons.email_outlined),
                               filled: true,
                               fillColor:
-                                  theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                                   const Icon(Icons.lock_outline),
                               filled: true,
                               fillColor:
-                                  theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,

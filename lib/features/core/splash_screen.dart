@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _navigateToHome();
   }
 
-  _navigateToHome() async {
+  Future<void> _navigateToHome() async {
     await Future.delayed(const Duration(milliseconds: 3000), () {});
     context.go('/login');
   }

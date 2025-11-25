@@ -111,7 +111,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                     decoration: const InputDecoration(
                       labelText: 'Category',
                     ),
-                    value: _selectedCategoryId,
+                    initialValue: _selectedCategoryId,
                     items: categories.map((category) {
                       return DropdownMenuItem<String>(
                         value: category.id,

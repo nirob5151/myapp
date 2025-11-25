@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/features/home/models/category.dart';
 import 'package:myapp/features/home/services/category_service.dart';
@@ -23,8 +24,15 @@ class MockEquipmentService implements EquipmentService {
   }
 
   @override
-  Future<void> addEquipment(Equipment equipment) {
-    return Future.value();
+  Stream<List<Equipment>> getEquipmentByOwner(String ownerId) {
+    return Stream.value([]);
+  }
+
+  @override
+  Future<DocumentReference> addEquipment(Equipment equipment) async {
+    // This is a mock, so we don't need a real implementation.
+    // We can throw an error if it's ever called in a test.
+    throw UnimplementedError('addEquipment is not implemented in mock');
   }
 
   @override
