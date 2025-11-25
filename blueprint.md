@@ -1,49 +1,65 @@
-# Farmer App Blueprint
+# Agri-Rental App Blueprint
 
 ## Overview
 
-This application is a marketplace for renting and listing agricultural equipment. It allows users to browse and search for equipment, view details, and contact owners. The app is built with Flutter and uses Firebase for backend services.
+Agri-Rental is a mobile application designed to connect farmers who need to rent agricultural equipment with equipment owners. The app provides a platform for owners to list their equipment and for farmers to browse and rent available items.
 
-## Style, Design, and Features
+## Current Plan: Farmer Experience Overhaul
 
-### Implemented (as of this version):
+This phase focuses on building a comprehensive and intuitive experience for farmers, from discovering equipment to managing bookings.
 
-*   **Authentication:**
-    *   User authentication with Firebase.
-    *   The user's full name is now saved during the signup process and displayed on the profile page.
-*   **Equipment Listings:**
-    *   Display a list of available equipment.
-    *   Search and filter equipment by category, country, and division.
-    *   View detailed information for each piece of equipment.
-    *   Add new equipment listings with images.
-*   **Owner (Lender) Section:**
-    *   A dedicated page for owners to view and manage their equipment listings.
-    *   The page fetches and displays only the equipment belonging to the currently logged-in user.
-    *   The UI displays a list of the owner's equipment, including the name, price, and availability status.
-*   **Profile Page:**
-    *   A redesigned, visually appealing UI with a card-based layout.
-    *   A prominent header displaying the user's profile picture, name, and email.
-    *   The profile page now correctly displays user information immediately after signup by receiving the `User` object directly as a navigation parameter, eliminating the previous race condition.
-    *   It then uses the user's `uid` to listen to a stream from Firestore for any subsequent updates.
-    *   Menu items for "Edit Profile," "Rental History," and "Settings" (functionality to be implemented).
-    *   A "Logout" button with a distinct color to signify a destructive action.
-*   **Database:**
-    *   Firestore is used to store equipment data.
-    *   Firebase Storage is used to store equipment images.
-*   **Navigation:**
-    *   GoRouter is used for declarative routing.
-    *   The router has been updated to pass the `User` object to the profile page upon registration.
-    *   A bottom navigation bar provides easy access to different sections of the app.
-    *   A back button has been added to the "Add Equipment" page.
-*   **UI/UX:**
-    *   The app uses the Material Design library.
-    *   A custom theme is applied for a consistent look and feel.
-    *   The UI is designed to be responsive and work on different screen sizes.
+### 1. Farmer Dashboard
 
-### Current Task: Implement Owner Section
+*   **Goal:** Replace the current simple list of equipment with a user-friendly dashboard that organizes equipment by category.
+*   **Implementation:**
+    *   The Farmer's home page will display a grid of equipment categories (e.g., "Tractors", "Harvesters", "Plows").
+    *   Create a `Category` model and a `CategoryService` to fetch categories from Firestore.
 
-**Plan and Steps:**
+### 2. Equipment Discovery
 
-1.  **Create Service Method:** Added a `getEquipmentByOwner` method to `EquipmentService` to fetch equipment by the owner's ID.
-2.  **Create Owner Page:** Created a new `OwnerListingsPage` to display the owner's equipment.
-3.  **Integrate Page:** Replaced the "My Farm" navigation with a link to the new `OwnerListingsPage`.
+*   **Goal:** Allow farmers to easily find the equipment they need.
+*   **Flow:** Category -> Equipment List -> Equipment Details.
+*   **Implementation:**
+    *   **Equipment List:** Tapping a category will navigate to a page showing all equipment in that category.
+    *   **Equipment Details Page:** A rich view with:
+        *   Image gallery/carousel.
+        *   Rental price (per hour/day).
+        *   Availability calendar.
+        *   Technical specifications.
+        *   Owner information (name, profile link).
+        *   Detailed description and terms of use.
+
+### 3. Booking System
+
+*   **Goal:** Implement a full booking workflow.
+*   **Implementation:**
+    *   **Booking Request:** Farmers can request to book equipment by selecting dates, times, duration, and a delivery location.
+    *   **Booking Model:** Create a `Booking` model with a defined lifecycle.
+    *   **Booking Lifecycle:** The status of a booking will be tracked in Firestore: `Pending`, `Accepted`, `Rejected`, `Ongoing`, `Completed`.
+    *   **Communication:**
+        *   **Chat:** Farmers can chat with the equipment owner for inquiries.
+        *   **Call:** A button to initiate a phone call with the owner.
+
+### 4. Farmer Profile
+
+*   **Goal:** Provide farmers with a dedicated space to manage their information and bookings.
+*   **Implementation:**
+    *   A profile page where farmers can:
+        *   Edit their personal information.
+        *   View their complete booking history (past and upcoming).
+        *   Select their preferred language for the app.
+
+## Implemented Features
+
+*   **Authentication:** User roles (`Farmer`, `Owner`), sign-up, and login.
+*   **UI/UX:** Custom theme, dark/light mode toggle, modern design.
+*   **Owner Role:** A basic interface to view and add equipment.
+*   **Project Structure:** A scalable feature-first project structure.
+*   **Bug Fix:** Resolved a crash on the farmer's home page related to missing rental prices.
+
+## Future Plans
+
+*   Advanced search and filtering.
+*   User ratings and reviews.
+*   Payment integration.
+*   Geolocation and notifications.
