@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,56 +13,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _obscureText = true;
-  bool _rememberMe = false;
-
-  Future<void> _login() async {
+  Future<void> _signInWithGoogle() async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final router = GoRouter.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
-      await authService.signInWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-      router.go('/');
+      final user = await authService.signInWithGoogle();
+      if (user != null) {
+        router.go('/home');
+      } else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Google Sign-In was cancelled.')),
+        );
+      }
     } catch (e) {
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
-  void _toggleRememberMe(bool? value) {
-    if (value != null) {
-      setState(() {
-        _rememberMe = value;
-      });
-    }
-  }
-
-  Future<void> _resetPassword() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    try {
-      await authService.sendPasswordResetEmail(_emailController.text);
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(
-          content: Text('Password reset email sent. Please check your inbox.'),
-        ),
-      );
-    } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(content: Text('Error during Google Sign-In: ${e.toString()}')),
       );
     }
   }
@@ -69,168 +37,145 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F5),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Login or Signup',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 32),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'Email',
-                  prefixIcon: const Icon(Icons.person_outline),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: _togglePasswordVisibility,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                obscureText: _obscureText,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: _toggleRememberMe,
-                      ),
-                      const Text('Remember Me'),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: _resetPassword,
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Color(0xFF3B873E)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3B873E),
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Row(
-                children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('or'),
-                  ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () {
-                  // TODO: Implement Google Sign-In
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  side: const BorderSide(color: Color(0xFF3B873E)),
-                ),
-                child: const Text(
-                  'Continue w/Google',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
-              const SizedBox(height: 32),
-              const Row(
-                children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('or'),
-                  ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildRoleCard(context, 'Farmer', 'Farmer', Icons.eco_outlined),
-                  _buildRoleCard(context, 'Owner (Lender)', 'Owner', Icons.home_work_outlined),
-                ],
-              )
-            ],
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 48),
+                _buildGoogleSignInButton(),
+                const SizedBox(height: 24),
+                _buildEmailSignInButton(),
+                const SizedBox(height: 24),
+                _buildRoleSelection(context),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRoleCard(BuildContext context, String title, String role, IconData icon) {
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        const Icon(
+          Icons.agriculture_outlined,
+          size: 80,
+          color: Colors.green,
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Welcome to Agri-Rental',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Connecting Farmers with Equipment Owners',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.g_mobiledata, color: Colors.white, size: 28),
+      label: Text(
+        'Continue with Google',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+      ),
+      onPressed: _signInWithGoogle,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmailSignInButton() {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.email_outlined, color: Colors.white, size: 24),
+      label: Text(
+        'Sign In with Email',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+      ),
+      onPressed: () => context.push('/login'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleSelection(BuildContext context) {
+    return Column(
+      children: [
+        const Row(
+          children: [
+            Expanded(child: Divider(thickness: 1)),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text('Or Sign Up As'),
+            ),
+            Expanded(child: Divider(thickness: 1)),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildRoleCard(context, 'Farmer', 'Farmer', Icons.eco_outlined),
+            _buildRoleCard(
+                context, 'Owner', 'Owner', Icons.agriculture_outlined),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoleCard(
+      BuildContext context, String title, String role, IconData icon) {
     return GestureDetector(
-      onTap: () => context.push('/signup?role=$role'),
+      onTap: () => context.push('/signup', extra: role),
       child: Card(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-        elevation: 2,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: SizedBox(
           width: 140,
           height: 120,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: const Color(0xFF3B873E)),
-              const SizedBox(height: 8),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Icon(icon, size: 40, color: Colors.green),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
             ],
           ),
         ),

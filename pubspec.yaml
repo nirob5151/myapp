@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   firebase_core: ^4.2.0
@@ -42,7 +44,7 @@ dev_dependencies:
   fake_cloud_firestore: ^4.0.0
 
 flutter:
-
+  generate: true
   uses-material-design: true
 
   assets:

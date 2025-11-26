@@ -1,8 +1,8 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/features/authentication/pages/login_page.dart';
-import 'package:myapp/features/authentication/pages/registration_page.dart';
+import 'package:myapp/features/authentication/screens/login_screen.dart';
 import 'package:myapp/features/authentication/screens/signup_screen.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/pages/add_equipment_page.dart';
@@ -12,12 +12,13 @@ import 'package:myapp/features/equipment/pages/pumps_page.dart';
 import 'package:myapp/features/equipment/pages/seeds_page.dart';
 import 'package:myapp/features/equipment/pages/tractors_page.dart';
 import 'package:myapp/features/equipment/pages/transport_vehicles_page.dart';
+import 'package:myapp/features/farmer/screens/farmer_dashboard_screen.dart';
 import 'package:myapp/features/home/pages/home_page.dart';
 import 'package:myapp/features/marketplace/pages/marketplace_page.dart';
 import 'package:myapp/features/my_farm/pages/my_farm_page.dart';
 import 'package:myapp/features/my_farm/pages/owner_listings_page.dart';
 import 'package:myapp/features/profile/pages/edit_profile_page.dart';
-import 'package:myapp/features/profile/pages/profile_page.dart'; 
+import 'package:myapp/features/profile/pages/profile_page.dart';
 
 class AppRouter {
   final FirebaseAuth auth;
@@ -29,7 +30,7 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
+          return const LoginScreen();
         },
       ),
       GoRoute(
@@ -39,9 +40,15 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/profile', 
+        path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const ProfilePage();
+        },
+      ),
+       GoRoute(
+        path: '/farmer/dashboard',
+        builder: (BuildContext context, GoRouterState state) {
+          return const FarmerDashboardScreen();
         },
       ),
       GoRoute(
@@ -51,16 +58,10 @@ class AppRouter {
           return EquipmentDetailPage(equipment: equipment);
         },
       ),
-       GoRoute(
+      GoRoute(
         path: '/my-listings',
         builder: (BuildContext context, GoRouterState state) {
           return const OwnerListingsPage();
-        },
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (BuildContext context, GoRouterState state) {
-          return const RegistrationPage();
         },
       ),
       GoRoute(
@@ -72,7 +73,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/tractors',
-        builder: (BuildContext context, GoRouterState state) {
+        builder: (BuildContext acontext, GoRouterState state) {
           return const TractorsPage();
         },
       ),
@@ -82,7 +83,7 @@ class AppRouter {
           return const HarvestersPage();
         },
       ),
-       GoRoute(
+      GoRoute(
         path: '/pumps',
         builder: (BuildContext context, GoRouterState state) {
           return const PumpsPage();
@@ -127,15 +128,15 @@ class AppRouter {
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final bool loggedIn = auth.currentUser != null;
-      final loggingIn = state.matchedLocation == '/' || state.matchedLocation == '/register' || state.matchedLocation == '/signup';
+      final loggingIn = state.matchedLocation == '/' || state.matchedLocation == '/signup';
 
       if (!loggedIn) {
         return loggingIn ? null : '/';
       }
 
-      // If logged in and on a login/register page, redirect to home.
+      // After login, redirect to the farmer dashboard
       if (loggingIn) {
-        return '/home';
+        return '/farmer/dashboard';
       }
 
       return null;

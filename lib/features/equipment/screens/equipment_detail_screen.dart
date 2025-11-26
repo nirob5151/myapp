@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/features/equipment/services/equipment_service.dart';
+import 'package:myapp/features/user/user_model.dart';
 import 'package:myapp/features/user/user_service.dart';
 import 'package:provider/provider.dart';
 
@@ -38,9 +39,9 @@ class EquipmentDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (equipment.imageUrl.isNotEmpty)
+                if (equipment.imageUrls.isNotEmpty)
                   Image.network(
-                    equipment.imageUrl,
+                    equipment.imageUrls.first,
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.image, size: 100),
                   ),
@@ -60,7 +61,7 @@ class EquipmentDetailScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                FutureBuilder<Map<String, dynamic>?>(
+                FutureBuilder<UserModel?>(
                   future: userService.getUser(equipment.ownerId),
                   builder: (context, userSnapshot) {
                     if (userSnapshot.connectionState == ConnectionState.waiting) {
@@ -70,7 +71,7 @@ class EquipmentDetailScreen extends StatelessWidget {
                       return const Text('Owner: Not available');
                     }
                     final owner = userSnapshot.data!;
-                    return Text('Owner: ${owner['name'] ?? 'N/A'}');
+                    return Text('Owner: ${owner.name}');
                   },
                 ),
                 const SizedBox(height: 32),

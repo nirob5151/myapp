@@ -1,80 +1,78 @@
-# Agri-Rental App Blueprint
+# Project Blueprint
 
-## App Overview
+## Overview
 
-Agri-Rental is a mobile application that connects farmers who need agricultural equipment with owners who have equipment available for rent. The app facilitates the entire rental process, from browsing and booking to communication and payment.
+This document outlines the structure and features of the Farm Equipment Rental application. The app allows users to browse, rent, and list farm equipment.
 
-## Features
+## Style and Design
 
-### Implemented
+The application uses a modern, clean design with a green color scheme to reflect the agricultural theme. It utilizes Material Design components for a consistent and intuitive user experience.
 
-*   **Farmer Dashboard:** A home screen for farmers to browse equipment categories and featured ads.
-*   **Theme Toggle:** Light and dark mode support.
-*   **User Authentication:** Secure login with Google Sign-In.
-*   **Real-time Chat:** In-app messaging between farmers and owners using Firebase.
-*   **User Profiles:** View and edit user profile information, including name and profile picture.
+- **Primary Color:** Dark Green (`#2C7D32`)
+- **Secondary Color:** Light Green (`#F5F9F5`)
+- **Typography:** The app uses the default Roboto font.
 
-### Planned
+## Features Implemented
 
-*   **Equipment Listings:** Detailed pages for each piece of equipment.
-*   **Booking System:** A complete system for requesting, accepting, and managing rentals.
-*   **Payment Integration:** Secure payment processing for rentals.
-*   **Notifications:** Real-time alerts for booking requests and updates.
-*   **Map Integration:** Displaying equipment and rental locations on a map.
+### 1. Authentication
 
-## Farmer User Story
+- Users can create an account and log in.
+- Authentication is handled by a dedicated `AuthService`.
+- User data is stored in Firestore and managed by a `UserService`.
 
-1.  **Browse and Discover:**
-    *   The farmer opens the app and sees a dashboard with equipment categories (e.g., Tractors, Harvesters, Pumps) and featured ads.
-    *   The farmer can search for specific equipment.
+### 2. Home Page
 
-2.  **View Equipment Listings:**
-    *   The farmer taps on a category to see a list of available equipment in that category.
-    *   Each item in the list displays the equipment name, image, price, availability, and location.
+- The home page displays a dashboard with quick actions, categories, and featured equipment.
+- It includes a header with a search bar.
+- The `_seedDatabase` function allows for populating the database with dummy data.
 
-3.  **Explore Equipment Details:**
-    *   The farmer taps on an equipment card to view a detailed page with:
-        *   An image slider with multiple pictures of the equipment.
-        *   Detailed pricing (per hour, day, week).
-        *   An availability calendar.
-        *   Technical specifications (e.g., power, model, fuel type).
-        *   Owner information (name, contact details).
-        *   The equipment's location on a map.
-        *   A detailed description and terms and conditions.
+### 3. Marketplace
 
-4.  **Book Equipment:**
-    *   The farmer can request a booking by selecting the desired date, time, duration, and rental location.
-    *   The farmer can also chat with the owner or call them directly from the app.
+- The marketplace page displays all available equipment in a grid view.
+- It includes a search bar to filter equipment by name.
 
-5.  **Manage Bookings:**
-    *   The farmer receives a notification when the owner accepts or rejects the booking request.
-    *   The farmer can track the status of their bookings (e.g., pending, confirmed, completed).
-    *   The farmer can view their rental history.
+### 4. Equipment Details
 
-## Owner User Story
+- The equipment details page shows detailed information about a selected piece of equipment.
+- It includes an image carousel, equipment details, and a "Rent Now" button.
 
-1.  **List Equipment:**
-    *   The owner can create a new equipment listing by providing all the necessary details, including images, pricing, and specifications.
+### 5. Profile
 
-2.  **Manage Listings:**
-    *   The owner can view, edit, or delete their equipment listings.
-    *   The owner can set the availability of their equipment on a calendar.
+- The profile page displays the user's information.
+- The edit profile page allows users to update their name and location.
 
-3.  **Handle Booking Requests:**
-    *   The owner receives a notification when a farmer requests to book their equipment.
-    *   The owner can review the request and either accept or reject it.
+### 6. Add Equipment
 
-4.  **Communicate with Farmers:**
-    *   The owner can chat with farmers in real-time to answer questions and coordinate rentals.
+- Users can add their own equipment to the marketplace.
+- The add equipment form includes fields for name, description, price, category, and images.
 
-5.  **Track Earnings:**
-    *   The owner can track their earnings from rentals.
+## Current Task: Refactor and Fix Equipment Model
 
-## Technical Details
+### Plan
 
-*   **Frontend:** Flutter
-*   **Backend:** Firebase (Firestore, Authentication, Storage, Cloud Firestore)
-*   **State Management:** Provider
-*   **Routing:** GoRouter
-*   **Authentication:** Google Sign-In
-*   **Chat:** Cloud Firestore
+1.  **Fix `lib/features/equipment/models/equipment.dart`:**
+    *   Add the `rentalPrice`, `location`, and `availability` fields to the `Equipment` model.
+    *   Update the `copyWith`, `fromSnap`, and `toJson` methods to include the new fields.
+
+2.  **Fix `lib/features/equipment/pages/add_equipment_page.dart`:**
+    *   Update the `_AddEquipmentPageState` to use the new fields in the `Equipment` model.
+    *   Add form fields for `rentalPrice`, `location`, and `availability`.
+
+3.  **Fix `lib/features/equipment/pages/equipment_detail_page.dart`:**
+    *   Update the UI to display the new `rentalPrice`, `location`, and `availability` fields.
+
+4.  **Fix `lib/features/farmer/widgets/equipment_card.dart`:**
+    *   Update the `EquipmentCard` to display the new `rentalPrice` and `availability` fields.
+
+5.  **Fix `lib/features/home/pages/home_page.dart`:**
+    *   Update the `_seedDatabase` method to use the new fields in the `Equipment` model.
+
+6.  **Fix `lib/features/equipment/data/dummy_equipment.dart`:**
+    *   Update the dummy data to include the new `rentalPrice`, `location`, and `availability` fields.
+
+7.  **Fix `lib/features/marketplace/pages/marketplace_page.dart`:**
+    *   Update the UI to display the new `rentalPrice` field.
+
+8.  **Fix `lib/features/profile/pages/edit_profile_page.dart`:**
+    *   Fix the `copyWith` method not being available on the `UserModel`.
+    *   Fix the `initialValue` property of the `DropdownButtonFormField`s.

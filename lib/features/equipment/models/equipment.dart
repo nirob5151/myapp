@@ -4,7 +4,7 @@ class Equipment {
   final String id;
   final String name;
   final String description;
-  final double price;
+  final double rentalPrice;
   final List<String> imageUrls;
   final String ownerId;
   final bool isAvailable;
@@ -12,12 +12,14 @@ class Equipment {
   final String category;
   final String country;
   final String division;
+  final String location;
+  final String availability;
 
   Equipment({
     required this.id,
     required this.name,
     required this.description,
-    required this.price,
+    required this.rentalPrice,
     required this.imageUrls,
     required this.ownerId,
     required this.isAvailable,
@@ -25,22 +27,28 @@ class Equipment {
     required this.category,
     required this.country,
     required this.division,
+    required this.location,
+    required this.availability,
   });
 
-  factory Equipment.fromFirestore(DocumentSnapshot doc) {
+  factory Equipment.fromSnap(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Equipment(
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      price: (data['price'] ?? 0).toDouble(),
+      rentalPrice: (data['rentalPrice'] ?? 0).toDouble(),
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
       ownerId: data['ownerId'] ?? '',
       isAvailable: data['isAvailable'] ?? false,
-      availableDates: (data['availableDates'] as List<dynamic>? ?? []).map((timestamp) => (timestamp as Timestamp).toDate()).toList(),
+      availableDates: (data['availableDates'] as List<dynamic>? ?? [])
+          .map((timestamp) => (timestamp as Timestamp).toDate())
+          .toList(),
       category: data['category'] ?? '',
       country: data['country'] ?? '',
       division: data['division'] ?? '',
+      location: data['location'] ?? '',
+      availability: data['availability'] ?? '',
     );
   }
 
@@ -48,14 +56,49 @@ class Equipment {
     return {
       'name': name,
       'description': description,
-      'price': price,
+      'rentalPrice': rentalPrice,
       'imageUrls': imageUrls,
       'ownerId': ownerId,
       'isAvailable': isAvailable,
-      'availableDates': availableDates.map((date) => Timestamp.fromDate(date)).toList(),
+      'availableDates':
+          availableDates.map((date) => Timestamp.fromDate(date)).toList(),
       'category': category,
       'country': country,
       'division': division,
+      'location': location,
+      'availability': availability,
     };
+  }
+
+  Equipment copyWith({
+    String? id,
+    String? name,
+    String? description,
+    double? rentalPrice,
+    List<String>? imageUrls,
+    String? ownerId,
+    bool? isAvailable,
+    List<DateTime>? availableDates,
+    String? category,
+    String? country,
+    String? division,
+    String? location,
+    String? availability,
+  }) {
+    return Equipment(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      rentalPrice: rentalPrice ?? this.rentalPrice,
+      imageUrls: imageUrls ?? this.imageUrls,
+      ownerId: ownerId ?? this.ownerId,
+      isAvailable: isAvailable ?? this.isAvailable,
+      availableDates: availableDates ?? this.availableDates,
+      category: category ?? this.category,
+      country: country ?? this.country,
+      division: division ?? this.division,
+      location: location ?? this.location,
+      availability: availability ?? this.availability,
+    );
   }
 }

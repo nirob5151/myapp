@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/features/authentication/services/auth_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,20 +17,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscureText = true;
   bool _isLoading = false;
+  String? _errorMessage;
+  String _selectedLanguage = 'English';
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
   }
 
   Future<void> _login() async {
@@ -37,21 +35,57 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final user = await authService.signInWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (user == null && mounted) {
+        setState(() {
+          _errorMessage = 'Login failed. Please check your credentials.';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _googleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      final user = await authService.signInWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-      // Let the stream handle navigation
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final user = await authService.signInWithGoogle();
+
+      if (user == null && mounted) {
+        setState(() {
+          _errorMessage = 'Google Sign-In failed. Please try again.';
+        });
+      }
     } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -64,109 +98,228 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F5),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(_selectedLanguage == 'English' ? 'Login' : 'লগইন'),
+        backgroundColor: const Color(0xFF1B5E20),
+        foregroundColor: Colors.white,
+        actions: [
+          _buildLanguageSelector(),
+        ],
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(32.0),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Welcome Back',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF2C7D32)),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Sign in to continue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
+                  _buildHeader(),
                   const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
+                  _buildEmailField(),
+                  const SizedBox(height: 20),
+                  _buildPasswordField(),
+                  const SizedBox(height: 12),
+                  _buildForgotPasswordButton(),
+                  const SizedBox(height: 30),
+                  _buildLoginButton(),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureText ? Icons.visibility_off : Icons.visibility,
-                        ),
-                        onPressed: _togglePasswordVisibility,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
-                      ),
+                  _buildGoogleSignInButton(),
+                  const SizedBox(height: 20),
+                  _buildSignupButton(),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red, fontSize: 14),
+                      textAlign: TextAlign.center,
                     ),
-                    obscureText: _obscureText,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B873E),
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Login',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => context.go('/register'),
-                    child: const Text(
-                      'Don\'t have an account? Sign Up',
-                      style: TextStyle(color: Color(0xFF3B873E)),
-                    ),
-                  ),
+                  ],
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLanguageSelector() {
+    return DropdownButton<String>(
+      value: _selectedLanguage,
+      dropdownColor: const Color(0xFF1B5E20),
+      icon: const Icon(Icons.language, color: Colors.white),
+      underline: Container(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _selectedLanguage = newValue;
+          });
+        }
+      },
+      items: <String>['English', 'Bangla']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(
+            value,
+            style: const TextStyle(color: Colors.white),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        const Icon(
+          Icons.agriculture,
+          size: 80,
+          color: Color(0xFF2E7D32),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          _selectedLanguage == 'English' ? 'Agri-Rental' : 'এগ্রি-রেন্টাল',
+          style: GoogleFonts.poppins(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1B5E20),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: InputDecoration(
+        labelText: _selectedLanguage == 'English' ? 'Phone or Email' : 'ফোন বা ইমেইল',
+        prefixIcon: const Icon(Icons.person_outline),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return _selectedLanguage == 'English'
+              ? 'Please enter your email or phone'
+              : 'অনুগ্রহ করে আপনার ইমেল বা ফোন লিখুন';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return TextFormField(
+      controller: _passwordController,
+      decoration: InputDecoration(
+        labelText: _selectedLanguage == 'English' ? 'Password' : 'পাসওয়ার্ড',
+        prefixIcon: const Icon(Icons.lock_outline),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      obscureText: true,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return _selectedLanguage == 'English'
+              ? 'Please enter your password'
+              : 'অনুগ্রহ করে আপনার পাসওয়ার্ড লিখুন';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildForgotPasswordButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {},
+        child: Text(
+          _selectedLanguage == 'English' ? 'Forgot Password?' : 'পাসওয়ার্ড ভুলে গেছেন?',
+          style: TextStyle(color: Theme.of(context).primaryColor),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : ElevatedButton(
+            onPressed: _login,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 5,
+            ),
+            child: Text(
+              _selectedLanguage == 'English' ? 'Login' : 'লগইন',
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return ElevatedButton.icon(
+      onPressed: _googleSignIn,
+      icon: SvgPicture.asset('assets/images/google_logo.svg', height: 24, width: 24),
+      label: Text(
+        _selectedLanguage == 'English' ? 'Continue with Google' : 'গুগল দিয়ে চালিয়ে যান',
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF4CAF50),
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 3,
+      ),
+    );
+  }
+
+  Widget _buildSignupButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          _selectedLanguage == 'English' ? "Don't have an account?" : "একটি একাউন্ট নাই?",
+          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+        ),
+        TextButton(
+          onPressed: () {
+            context.go('/signup');
+          },
+          child: Text(
+            _selectedLanguage == 'English' ? "Sign Up" : "নিবন্ধন করুন",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

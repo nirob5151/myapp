@@ -14,7 +14,7 @@ class EquipmentDetailScreen extends StatelessWidget {
       id: equipmentId,
       name: 'Tractor for Rent - Sonalika 750',
       price: 500,
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/39/Sonalika_DI_750_III_tractor.jpg',
+      imageUrls: ['https://upload.wikimedia.org/wikipedia/commons/3/39/Sonalika_DI_750_III_tractor.jpg'],
       ownerId: 'user123',
       isAvailable: true,
       availableDates: [DateTime.now(), DateTime.now().add(const Duration(days: 1))],
@@ -22,6 +22,9 @@ class EquipmentDetailScreen extends StatelessWidget {
       country: 'Ireland',
       division: 'Leinster',
       description: 'Paralyess .65 HF Bleeid adgine Hysto use thing sucwith more',
+      rentalPrice: 500,
+      location: 'Dublin',
+      availability: 'Available',
     );
 
     return Scaffold(
@@ -57,7 +60,7 @@ class EquipmentDetailScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                 elevation: 4.0,
                 child: Image.network(
-                  equipment.imageUrl,
+                  equipment.imageUrls.first,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => const Icon(Icons.agriculture, size: 150, color: Colors.grey),
                 ),

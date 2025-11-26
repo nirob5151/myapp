@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String? country;
   final String? division;
+  final String? photoUrl;
 
   UserModel({
     required this.uid,
@@ -13,6 +14,7 @@ class UserModel {
     required this.email,
     this.country,
     this.division,
+    this.photoUrl,
   });
 
   factory UserModel.fromSnap(DocumentSnapshot snap) {
@@ -23,6 +25,7 @@ class UserModel {
       email: snapshot['email'] ?? '',
       country: snapshot['country'],
       division: snapshot['division'],
+      photoUrl: snapshot['photoUrl'],
     );
   }
 
@@ -31,6 +34,7 @@ class UserModel {
         "email": email,
         "country": country,
         "division": division,
+        "photoUrl": photoUrl,
       };
 
   UserModel copyWith({
@@ -39,6 +43,7 @@ class UserModel {
     String? email,
     String? country,
     String? division,
+    String? photoUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -46,6 +51,7 @@ class UserModel {
       email: email ?? this.email,
       country: country ?? this.country,
       division: division ?? this.division,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 }

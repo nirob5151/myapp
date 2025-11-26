@@ -7,7 +7,7 @@ class EquipmentService {
   // Get a stream of equipment
   Stream<List<Equipment>> getEquipment() {
     return _firestore.collection('equipment').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Equipment.fromFirestore(doc)).toList();
+      return snapshot.docs.map((doc) => Equipment.fromSnap(doc)).toList();
     });
   }
 
@@ -18,7 +18,7 @@ class EquipmentService {
         .where('ownerId', isEqualTo: ownerId)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => Equipment.fromFirestore(doc)).toList();
+      return snapshot.docs.map((doc) => Equipment.fromSnap(doc)).toList();
     });
   }
 
@@ -26,7 +26,7 @@ class EquipmentService {
   Future<Equipment?> getEquipmentById(String id) async {
     final doc = await _firestore.collection('equipment').doc(id).get();
     if (doc.exists) {
-      return Equipment.fromFirestore(doc);
+      return Equipment.fromSnap(doc);
     }
     return null;
   }

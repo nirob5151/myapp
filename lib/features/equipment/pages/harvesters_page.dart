@@ -314,7 +314,7 @@ class _HarvestersPageState extends State<HarvestersPage> {
                                         ),
                                         const SizedBox(height: 8.0),
                                         Text(
-                                          '$currencySymbol${equipment.price.toStringAsFixed(0)}/day',
+                                          '$currencySymbol${equipment.rentalPrice.toStringAsFixed(0)}/day',
                                           style: GoogleFonts.notoSans(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16.0,

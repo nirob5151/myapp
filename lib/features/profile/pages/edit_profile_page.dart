@@ -159,7 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        initialValue: _selectedCountry,
+                        value: _selectedCountry,
                         decoration: const InputDecoration(
                           labelText: 'Country',
                           border: OutlineInputBorder(),
@@ -182,7 +182,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        initialValue: _selectedDivision,
+                        value: _selectedDivision,
                         decoration: const InputDecoration(
                           labelText: 'Division',
                           border: OutlineInputBorder(),
