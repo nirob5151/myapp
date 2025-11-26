@@ -2,8 +2,9 @@
 class Equipment {
   final String name;
   final String model;
+  final String category;
   final List<String> imageUrls;
-  final Map<String, double> price; // e.g., {'hour': 500, 'day': 4000, 'week': 25000}
+  final Map<String, int> price; // e.g., {'hour': 500, 'day': 4000, 'week': 25000}
   final String availability;
   final String location;
   final String ownerId;
@@ -17,6 +18,7 @@ class Equipment {
   Equipment({
     required this.name,
     required this.model,
+    required this.category,
     required this.imageUrls,
     required this.price,
     required this.availability,

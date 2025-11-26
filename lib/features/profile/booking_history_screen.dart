@@ -17,6 +17,7 @@ class BookingHistoryScreen extends StatelessWidget {
         equipment: Equipment(
           name: 'Sonalika Tractor',
           model: 'DI 745 III',
+          category: 'Tractors',
           imageUrls: ['https://loremflickr.com/320/240/tractor?random=1'],
           price: {'hour': 1000, 'day': 8000, 'week': 50000},
           availability: 'Available',
@@ -42,6 +43,7 @@ class BookingHistoryScreen extends StatelessWidget {
         equipment: Equipment(
           name: 'Mahindra Sprayer',
           model: 'M-SP1000',
+          category: 'Sprayers',
           imageUrls: ['https://loremflickr.com/320/240/sprayer?random=2'],
           price: {'hour': 500, 'day': 3500, 'week': 20000},
           availability: 'Not Available',
@@ -67,6 +69,7 @@ class BookingHistoryScreen extends StatelessWidget {
         equipment: Equipment(
           name: 'Kubota Harvester',
           model: 'PRO688Q',
+          category: 'Harvesters',
           imageUrls: ['https://loremflickr.com/320/240/harvester?random=3'],
           price: {'hour': 2500, 'day': 20000, 'week': 120000},
           availability: 'Available',

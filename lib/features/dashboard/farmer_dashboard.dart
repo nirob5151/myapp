@@ -10,7 +10,7 @@ class FarmerDashboard extends StatelessWidget {
     final List<Map<String, dynamic>> categories = [
       {'name': 'Tractors', 'icon': Icons.agriculture},
       {'name': 'Harvesters', 'icon': Icons.grain},
-      {'name': 'Plows', 'icon': Icons.explore},
+      {'name': 'Pumps', 'icon': Icons.opacity},
       {'name': 'Sprayers', 'icon': Icons.eco},
       {'name': 'Accessories', 'icon': Icons.settings},
       {'name': 'Torvex', 'icon': Icons.more_horiz},
@@ -145,8 +145,8 @@ class FarmerDashboard extends StatelessWidget {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
+            icon: Icon(Icons.book_online),
+            label: 'My Rentals',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
@@ -161,10 +161,13 @@ class FarmerDashboard extends StatelessWidget {
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          if (index == 3) {
+          if (index == 1) {
+            Navigator.pushNamed(context, AppRoutes.bookingHistory);
+          } else if (index == 2) {
+            Navigator.pushNamed(context, AppRoutes.chat);
+          } else if (index == 3) {
             Navigator.pushNamed(context, AppRoutes.profile);
           }
-          // Add navigation for other items if needed
         },
       ),
     );

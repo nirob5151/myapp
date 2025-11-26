@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:myapp/features/chat/chat_screen.dart';
+import 'package:myapp/features/chat/conversation_screen.dart';
 import 'package:myapp/features/dashboard/farmer_dashboard.dart';
 import 'package:myapp/features/equipment/booking_screen.dart';
 import 'package:myapp/features/equipment/category_listing_screen.dart';
@@ -16,6 +18,8 @@ class AppRoutes {
   static const String booking = '/booking';
   static const String profile = '/profile';
   static const String bookingHistory = '/booking-history';
+  static const String chat = '/chat';
+  static const String conversation = '/conversation';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -40,6 +44,13 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case bookingHistory:
         return MaterialPageRoute(builder: (_) => const BookingHistoryScreen());
+      case chat:
+        return MaterialPageRoute(builder: (_) => const ChatScreen());
+      case conversation:
+        final String ownerName = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => ConversationScreen(ownerName: ownerName),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const NotFoundScreen());
     }

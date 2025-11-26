@@ -13,10 +13,10 @@ class CategoryListingScreen extends StatelessWidget {
     // Dummy data for demonstration
     final List<Equipment> equipmentList = [
       Equipment(
-        name: 'Sonalika Tractor',
+        name: 'Sonalika 750',
         model: 'DI 745 III',
         imageUrls: ['https://loremflickr.com/320/240/tractor?random=1'],
-        price: {'hour': 1000, 'day': 8000, 'week': 50000},
+        price: {'day': 500},
         availability: 'Available',
         location: 'Dhaka',
         ownerId: 'owner1',
@@ -26,6 +26,55 @@ class CategoryListingScreen extends StatelessWidget {
         fuelType: 'Diesel',
         description: 'A powerful and reliable tractor for all your farming needs.',
         terms: 'Standard rental terms apply.',
+        category: 'Tractors',
+      ),
+      Equipment(
+        name: 'Tractor for Rent',
+        model: 'DI 745 III',
+        imageUrls: ['https://loremflickr.com/320/240/tractor?random=5'],
+        price: {'day': 400},
+        availability: 'Available',
+        location: 'Dhaka',
+        ownerId: 'owner1',
+        rating: 4.5,
+        hp: 50,
+        modelYear: 2021,
+        fuelType: 'Diesel',
+        description: 'A powerful and reliable tractor for all your farming needs.',
+        terms: 'Standard rental terms apply.',
+        category: 'Tractors',
+      ),
+      Equipment(
+        name: 'New Holland T5',
+        model: 'DI 745 III',
+        imageUrls: ['https://loremflickr.com/320/240/tractor?random=6'],
+        price: {'day': 300},
+        availability: 'Available',
+        location: 'Dhaka',
+        ownerId: 'owner1',
+        rating: 4.5,
+        hp: 50,
+        modelYear: 2021,
+        fuelType: 'Diesel',
+        description: 'A powerful and reliable tractor for all your farming needs.',
+        terms: 'Standard rental terms apply.',
+        category: 'Tractors',
+      ),
+      Equipment(
+        name: 'Massey Ferguson',
+        model: 'DI 745 III',
+        imageUrls: ['https://loremflickr.com/320/240/tractor?random=7'],
+        price: {'day': 600},
+        availability: 'Available',
+        location: 'Dhaka',
+        ownerId: 'owner1',
+        rating: 4.5,
+        hp: 50,
+        modelYear: 2021,
+        fuelType: 'Diesel',
+        description: 'A powerful and reliable tractor for all your farming needs.',
+        terms: 'Standard rental terms apply.',
+        category: 'Tractors',
       ),
       Equipment(
         name: 'Mahindra Sprayer',
@@ -41,6 +90,7 @@ class CategoryListingScreen extends StatelessWidget {
         fuelType: 'Gasoline',
         description: 'Efficient and easy-to-use sprayer for pesticides and fertilizers.',
         terms: 'Handle with care. Renter is liable for damages.',
+        category: 'Sprayers',
       ),
       Equipment(
         name: 'Kubota Harvester',
@@ -56,6 +106,7 @@ class CategoryListingScreen extends StatelessWidget {
         fuelType: 'Diesel',
         description: 'High-performance harvester for quick and efficient crop cutting.',
         terms: 'Requires a trained operator.',
+        category: 'Harvesters',
       ),
       Equipment(
         name: 'John Deere Planter',
@@ -71,105 +122,152 @@ class CategoryListingScreen extends StatelessWidget {
         fuelType: 'Diesel',
         description: 'Precision planter for accurate seed placement.',
         terms: 'Calibration and setup included.',
+        category: 'Planters',
       ),
     ];
+
+    final List<Equipment> filteredList = equipmentList
+        .where((eq) => eq.category.toLowerCase() == categoryName.toLowerCase())
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(categoryName),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: equipmentList.length,
-        itemBuilder: (context, index) {
-          final equipment = equipmentList[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.equipmentDetail,
-                arguments: equipment,
-              );
-            },
-            child: Card(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                    child: Image.network(
-                      equipment.imageUrls.first,
-                      height: 180,
-                      fit: BoxFit.cover,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search $categoryName',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  value: 'Category',
+                  items: <String>['Category', 'Tractors', 'Harvesters']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
+                DropdownButton<String>(
+                  value: 'Country',
+                  items: <String>['Country', 'Bangladesh', 'India']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
+                DropdownButton<String>(
+                  value: 'Division',
+                  items: <String>['Division', 'Dhaka', 'Chittagong']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: filteredList.length,
+              itemBuilder: (context, index) {
+                final equipment = filteredList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.equipmentDetail,
+                      arguments: equipment,
+                    );
+                  },
+                  child: Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          equipment.name,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          equipment.model,
-                          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '৳${equipment.price['hour']}/hr',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              equipment.imageUrls.first,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
                             ),
-                            Row(
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.star, color: Colors.amber, size: 20),
-                                const SizedBox(width: 5),
                                 Text(
-                                  equipment.rating.toString(),
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  'Tractor for Rent - ${equipment.name}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '৳${equipment.price['day']}/day',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  equipment.availability,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: equipment.availability == 'Available'
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Icon(Icons.location_on, color: Colors.grey[600], size: 16),
-                            const SizedBox(width: 5),
-                            Text(
-                              equipment.location,
-                              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.booking,
-                              arguments: equipment,
-                            );
-                          },
-                          child: const Text('Book Now'),
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
