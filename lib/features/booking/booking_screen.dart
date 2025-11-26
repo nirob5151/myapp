@@ -8,46 +8,20 @@ class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key, required this.equipment});
 
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
+  _BookingScreenState createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  int _duration = 1;
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
-    }
-  }
+  int? _duration;
+  String? _location;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Book ${widget.equipment.name}'),
-        backgroundColor: Colors.green[800],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -55,98 +29,83 @@ class _BookingScreenState extends State<BookingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select Date and Time',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              'Select Booking Details',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _selectedDate == null
-                        ? 'No date selected'
-                        : 'Date: ${_selectedDate!.toLocal()} '.split(' ')[0],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => _selectDate(context),
-                  child: const Text('Select Date'),
-                ),
-              ],
+            const SizedBox(height: 20),
+            // Date Picker
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: Text(_selectedDate == null
+                  ? 'Select Date'
+                  : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2101),
+                );
+                if (picked != null && picked != _selectedDate) {
+                  setState(() {
+                    _selectedDate = picked;
+                  });
+                }
+              },
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _selectedTime == null
-                        ? 'No time selected'
-                        : 'Time: ${_selectedTime!.format(context)}',
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => _selectTime(context),
-                  child: const Text('Select Time'),
-                ),
-              ],
+            // Time Picker
+            ListTile(
+              leading: const Icon(Icons.access_time),
+              title: Text(_selectedTime == null
+                  ? 'Select Time'
+                  : _selectedTime!.format(context)),
+              onTap: () async {
+                final TimeOfDay? picked = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (picked != null && picked != _selectedTime) {
+                  setState(() {
+                    _selectedTime = picked;
+                  });
+                }
+              },
             ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-            Text(
-              'Duration (in days)',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            // Duration Input
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Duration (in hours)',
+                  icon: Icon(Icons.timer),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  _duration = int.tryParse(value);
+                },
+              ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    if (_duration > 1) {
-                      setState(() {
-                        _duration--;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.remove),
+            // Location Input
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Rental Location',
+                  icon: Icon(Icons.location_on),
                 ),
-                Text(
-                  '$_duration',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _duration++;
-                    });
-                  },
-                  icon: const Icon(Icons.add),
-                ),
-              ],
+                onChanged: (value) {
+                  _location = value;
+                },
+              ),
             ),
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement booking confirmation
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Booking request sent!'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  // TODO: Implement booking request logic
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[800],
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text('Confirm Request', style: TextStyle(color: Colors.white)),
+                child: const Text('Confirm Request'),
               ),
             ),
           ],

@@ -1,59 +1,33 @@
 
-# Project Blueprint: Farmer's Market App
+# Project Overview
 
-## Overview
+Krishi Bazaar is a Flutter application that allows farmers to rent agricultural equipment. The app connects equipment owners with farmers who need to rent equipment for their farming activities. The app provides a platform for browsing, booking, and managing equipment rentals.
 
-This application is a mobile marketplace designed to connect farmers with equipment renters. Farmers can browse and search for agricultural equipment, view featured ads, and manage their own farm-related activities. The app supports both light and dark themes and is built with a focus on a clean, modern, and user-friendly design.
+# Features Implemented
 
----
+*   **Farmer Dashboard:** A dashboard that displays the different categories of equipment available for rent.
+*   **Category Listing:** A screen that lists all the equipment available in a specific category.
+*   **Equipment Detail:** A screen that shows the details of a specific piece of equipment, including its price, availability, and location.
+*   **Booking:** A screen that allows farmers to book a piece of equipment for a specific period.
+*   **Profile:** A screen that displays the user's profile information and provides access to their booking history.
+*   **Booking History:** A screen that shows a list of all the equipment that the user has booked.
+*   **Centralized Routing:** A centralized routing system that handles all the navigation in the app.
+*   **Not Found Screen:** A screen that is displayed when a user tries to navigate to a route that does not exist.
+*   **Theme Provider:** A theme provider that manages the application's theme.
+*   **Light and Dark Themes:** The application now supports both light and dark themes.
+*   **Theme Toggle:** A feature that allows users to switch between light and dark modes, and also to set the theme to follow the system settings.
+*   **Modern UI:** The application has been updated with a more modern and visually appealing design, including a bottom navigation bar, horizontally scrolling category cards, and improved styling for the equipment listing and detail screens.
+*   **Date and Time Pickers:** The booking screen now includes date and time pickers to allow users to select the start and end dates and times for their bookings.
 
-## Implemented Features & Design
+# Plan for Current Changes
 
-*   **Architecture:**
-    *   Provider for State Management (`ThemeProvider`).
-    *   GoRouter for declarative navigation.
-    *   Layered architecture (separating UI, services, and models).
-    *   Firebase integration (Auth, Firestore).
-
-*   **Authentication:**
-    *   Email/Password and Google Sign-In.
-    *   Auth state persistence with a splash screen for loading.
-    *   Auth service to handle user session logic.
-    *   Role-based redirection (Farmer/Renter) after login.
-
-*   **UI & Design:**
-    *   Material 3 Design with `ColorScheme.fromSeed`.
-    *   Custom typography using `google_fonts` (Poppins).
-    *   Theming system with support for Light/Dark mode toggle.
-    *   A bottom navigation bar for main app sections.
-
-*   **Farmer Dashboard:**
-    *   SliverAppBar with an integrated search bar.
-    *   A grid-based "Categories" section with descriptive icons.
-    *   A grid-based "Featured Ads" section to showcase rental equipment.
-
----
-
-## Current Task: Refactor "Featured Ads" to use Firestore
-
-**Objective:** The current "Featured Ads" are hardcoded into the UI, which is inflexible. The images are also failing to load due to a combination of hot-reload issues and a poor data source. This plan will refactor the feature to load data dynamically and correctly from Cloud Firestore.
-
-**Plan:**
-
-1.  **Create a Firestore Service:**
-    *   Develop a new service class at `lib/features/farmer/services/ad_service.dart`.
-    *   This service will contain a method `getFeaturedAds()` that fetches documents from the `featuredAds` collection in Firestore.
-    *   Define an `Ad` model class to structure the data retrieved from Firestore (name, price, status, image URL).
-
-2.  **Refactor the UI (FarmerDashboardScreen):**
-    *   Replace the hardcoded `featuredAds` list.
-    *   Implement a `FutureBuilder` widget that calls the `ad_service.getFeaturedAds()` method.
-    *   The builder will display a loading indicator while fetching data.
-    *   Once the data is loaded, it will render the two-column grid of "Featured Ads" using the data from Firestore.
-    *   Proper error handling will be included for the `FutureBuilder`.
-
-3.  **Populate Firestore Database:**
-    *   Create and execute a one-time script or function to populate the `featuredAds` collection with initial documents. Each document will contain fields for `name`, `price`, `status`, and a valid, publicly accessible `imageUrl`.
-
-4.  **Ensure Full App Restart:**
-    *   After the code changes are complete, trigger a full "cold" restart of the application (`flutter run`) to ensure the previously added `INTERNET` permission in `AndroidManifest.xml` is correctly loaded by the Android system. This will resolve the image loading failures.
+*   **Create a centralized routing system:** Create a `routes.dart` file to centralize all the routing logic in the app. This will make the navigation more organized and easier to manage.
+*   **Update the navigation logic:** Update the navigation logic in all the relevant files to use the new centralized routing system. This will make the navigation more consistent and easier to maintain.
+*   **Create a Not Found screen:** Create a screen that is displayed when a user tries to navigate to a route that does not exist. This will improve the user experience by providing a clear message instead of a generic error.
+*   **Make equipment cards tappable:** Make the equipment cards on the `CategoryListingScreen` tappable so that tapping on a card will navigate the user to the `EquipmentDetailScreen` for that specific piece of equipment.
+*   **Add a theme provider:** Create a `ThemeProvider` to manage the application's theme. This will allow for easy switching between light and dark modes.
+*   **Implement light and dark themes:** Define light and dark themes for the application using the `google_fonts` package and `ColorScheme.fromSeed`.
+*   **Add a theme toggle:** Add a theme toggle button to the `ProfileScreen` to allow users to switch between light and dark modes.
+*   **Modernize the UI:** Update the UI of the `FarmerDashboard`, `CategoryListingScreen`, and `EquipmentDetailScreen` to have a more modern and visually appealing design.
+*   **Add a bottom navigation bar:** Add a bottom navigation bar to the `FarmerDashboard` to provide easy access to the main sections of the app.
+*   **Add date and time pickers:** Add date and time pickers to the `BookingScreen` to allow users to select the start and end dates and times for their bookings.
