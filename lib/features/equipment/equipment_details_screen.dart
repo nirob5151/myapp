@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:myapp/features/booking/booking_screen.dart';
 import 'package:myapp/models/equipment.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class EquipmentDetailsScreen extends StatelessWidget {
   final Equipment equipment;
@@ -12,169 +10,163 @@ class EquipmentDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 250.0,
-            pinned: true,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(equipment.name, style: const TextStyle(shadows: [Shadow(blurRadius: 10)])),
-              background: CarouselSlider(
-                options: CarouselOptions(
-                  height: 300.0,
-                  autoPlay: true,
-                  viewportFraction: 1.0,
-                ),
-                items: equipment.imageUrls.map((item) => Container(
-                  child: Center(
-                    child: Image.network(item, fit: BoxFit.cover, height: 300)
-                  ),
-                )).toList(),
-              ),
-            ),
-             actions: [
-              IconButton(
-                icon: const Icon(Icons.call),
-                onPressed: () {
-                  // TODO: Implement call functionality
-                },
-                tooltip: 'Call Owner',
-              ),
-              IconButton(
-                icon: const Icon(Icons.message),
-                onPressed: () {
-                  // TODO: Implement messaging functionality
-                },
-                tooltip: 'Message Owner',
-              ),
-            ],
+      appBar: AppBar(
+        title: Text(equipment.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.green[800],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.call, color: Colors.white),
+            onPressed: () {
+              // TODO: Implement call functionality
+            },
           ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              equipment.name,
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              equipment.model,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
-                            ),
-                             const SizedBox(height: 8),
-                            Text(
-                              '৳${equipment.price['day']}/day', // Assuming daily price
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 24),
-                            const SizedBox(width: 5),
-                            Text(
-                              equipment.rating.toString(),
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-
-                    // Specifications
-                    _buildSectionTitle(context, 'Details'),
-                    _buildSpecificationRow('HP', '${equipment.hp} HP'),
-                    _buildSpecificationRow('Model Year', equipment.modelYear.toString()),
-                    _buildSpecificationRow('Fuel Type', equipment.fuelType),
-                    const SizedBox(height: 20),
-                    const Divider(),
-
-                    // Description
-                    _buildSectionTitle(context, 'Description'),
-                    Text(
-                      equipment.description,
-                      style: const TextStyle(height: 1.5, fontSize: 16),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-
-                    // Terms and Conditions
-                    _buildSectionTitle(context, 'Terms and Conditions'),
-                    Text(
-                      equipment.terms,
-                      style: const TextStyle(height: 1.5, fontSize: 16),
-                    ),
-
-                  ],
-                ),
-              ),
-            ]),
+          IconButton(
+            icon: const Icon(Icons.message, color: Colors.white),
+            onPressed: () {
+              // TODO: Implement message functionality
+            },
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              padding: const EdgeInsets.symmetric(vertical: 18.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 250,
+              child: PageView.builder(
+                itemCount: equipment.imageUrls.length,
+                itemBuilder: (context, index) {
+                  return Image.network(
+                    equipment.imageUrls[index],
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 250),
+                  );
+                },
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookingScreen(equipment: equipment),
-                ),
-              );
-            },
-            child: const Text('Book Now', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        equipment.name,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber[600], size: 24),
+                          const SizedBox(width: 5),
+                          Text(
+                            equipment.rating.toString(),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    equipment.model,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Description',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    equipment.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Rental Prices',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          _buildPriceRow(context, 'Hourly', equipment.price['hour'] ?? 'N/A'),
+                          const Divider(height: 20, thickness: 1),
+                          _buildPriceRow(context, 'Daily', equipment.price['day'] ?? 'N/A'),
+                          const Divider(height: 20, thickness: 1),
+                          _buildPriceRow(context, 'Weekly', equipment.price['week'] ?? 'N/A'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // TODO: Implement booking logic
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[800],
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      child: const Text('Book Now'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 8.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _buildSpecificationRow(String key, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(key, style: TextStyle(color: Colors.grey[700], fontSize: 16)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        ],
-      ),
+  Widget _buildPriceRow(BuildContext context, String duration, dynamic price) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          duration,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          price is num ? '৳$price' : price.toString(),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
+        ),
+      ],
     );
   }
 }
