@@ -1,78 +1,59 @@
-# Project Blueprint
+
+# Project Blueprint: Farmer's Market App
 
 ## Overview
 
-This document outlines the structure and features of the Farm Equipment Rental application. The app allows users to browse, rent, and list farm equipment.
+This application is a mobile marketplace designed to connect farmers with equipment renters. Farmers can browse and search for agricultural equipment, view featured ads, and manage their own farm-related activities. The app supports both light and dark themes and is built with a focus on a clean, modern, and user-friendly design.
 
-## Style and Design
+---
 
-The application uses a modern, clean design with a green color scheme to reflect the agricultural theme. It utilizes Material Design components for a consistent and intuitive user experience.
+## Implemented Features & Design
 
-- **Primary Color:** Dark Green (`#2C7D32`)
-- **Secondary Color:** Light Green (`#F5F9F5`)
-- **Typography:** The app uses the default Roboto font.
+*   **Architecture:**
+    *   Provider for State Management (`ThemeProvider`).
+    *   GoRouter for declarative navigation.
+    *   Layered architecture (separating UI, services, and models).
+    *   Firebase integration (Auth, Firestore).
 
-## Features Implemented
+*   **Authentication:**
+    *   Email/Password and Google Sign-In.
+    *   Auth state persistence with a splash screen for loading.
+    *   Auth service to handle user session logic.
+    *   Role-based redirection (Farmer/Renter) after login.
 
-### 1. Authentication
+*   **UI & Design:**
+    *   Material 3 Design with `ColorScheme.fromSeed`.
+    *   Custom typography using `google_fonts` (Poppins).
+    *   Theming system with support for Light/Dark mode toggle.
+    *   A bottom navigation bar for main app sections.
 
-- Users can create an account and log in.
-- Authentication is handled by a dedicated `AuthService`.
-- User data is stored in Firestore and managed by a `UserService`.
+*   **Farmer Dashboard:**
+    *   SliverAppBar with an integrated search bar.
+    *   A grid-based "Categories" section with descriptive icons.
+    *   A grid-based "Featured Ads" section to showcase rental equipment.
 
-### 2. Home Page
+---
 
-- The home page displays a dashboard with quick actions, categories, and featured equipment.
-- It includes a header with a search bar.
-- The `_seedDatabase` function allows for populating the database with dummy data.
+## Current Task: Refactor "Featured Ads" to use Firestore
 
-### 3. Marketplace
+**Objective:** The current "Featured Ads" are hardcoded into the UI, which is inflexible. The images are also failing to load due to a combination of hot-reload issues and a poor data source. This plan will refactor the feature to load data dynamically and correctly from Cloud Firestore.
 
-- The marketplace page displays all available equipment in a grid view.
-- It includes a search bar to filter equipment by name.
+**Plan:**
 
-### 4. Equipment Details
+1.  **Create a Firestore Service:**
+    *   Develop a new service class at `lib/features/farmer/services/ad_service.dart`.
+    *   This service will contain a method `getFeaturedAds()` that fetches documents from the `featuredAds` collection in Firestore.
+    *   Define an `Ad` model class to structure the data retrieved from Firestore (name, price, status, image URL).
 
-- The equipment details page shows detailed information about a selected piece of equipment.
-- It includes an image carousel, equipment details, and a "Rent Now" button.
+2.  **Refactor the UI (FarmerDashboardScreen):**
+    *   Replace the hardcoded `featuredAds` list.
+    *   Implement a `FutureBuilder` widget that calls the `ad_service.getFeaturedAds()` method.
+    *   The builder will display a loading indicator while fetching data.
+    *   Once the data is loaded, it will render the two-column grid of "Featured Ads" using the data from Firestore.
+    *   Proper error handling will be included for the `FutureBuilder`.
 
-### 5. Profile
+3.  **Populate Firestore Database:**
+    *   Create and execute a one-time script or function to populate the `featuredAds` collection with initial documents. Each document will contain fields for `name`, `price`, `status`, and a valid, publicly accessible `imageUrl`.
 
-- The profile page displays the user's information.
-- The edit profile page allows users to update their name and location.
-
-### 6. Add Equipment
-
-- Users can add their own equipment to the marketplace.
-- The add equipment form includes fields for name, description, price, category, and images.
-
-## Current Task: Refactor and Fix Equipment Model
-
-### Plan
-
-1.  **Fix `lib/features/equipment/models/equipment.dart`:**
-    *   Add the `rentalPrice`, `location`, and `availability` fields to the `Equipment` model.
-    *   Update the `copyWith`, `fromSnap`, and `toJson` methods to include the new fields.
-
-2.  **Fix `lib/features/equipment/pages/add_equipment_page.dart`:**
-    *   Update the `_AddEquipmentPageState` to use the new fields in the `Equipment` model.
-    *   Add form fields for `rentalPrice`, `location`, and `availability`.
-
-3.  **Fix `lib/features/equipment/pages/equipment_detail_page.dart`:**
-    *   Update the UI to display the new `rentalPrice`, `location`, and `availability` fields.
-
-4.  **Fix `lib/features/farmer/widgets/equipment_card.dart`:**
-    *   Update the `EquipmentCard` to display the new `rentalPrice` and `availability` fields.
-
-5.  **Fix `lib/features/home/pages/home_page.dart`:**
-    *   Update the `_seedDatabase` method to use the new fields in the `Equipment` model.
-
-6.  **Fix `lib/features/equipment/data/dummy_equipment.dart`:**
-    *   Update the dummy data to include the new `rentalPrice`, `location`, and `availability` fields.
-
-7.  **Fix `lib/features/marketplace/pages/marketplace_page.dart`:**
-    *   Update the UI to display the new `rentalPrice` field.
-
-8.  **Fix `lib/features/profile/pages/edit_profile_page.dart`:**
-    *   Fix the `copyWith` method not being available on the `UserModel`.
-    *   Fix the `initialValue` property of the `DropdownButtonFormField`s.
+4.  **Ensure Full App Restart:**
+    *   After the code changes are complete, trigger a full "cold" restart of the application (`flutter run`) to ensure the previously added `INTERNET` permission in `AndroidManifest.xml` is correctly loaded by the Android system. This will resolve the image loading failures.

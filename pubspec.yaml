@@ -24,7 +24,7 @@ dependencies:
   go_router: ^17.0.0
   json_annotation: ^4.9.0
   google_sign_in: ^6.2.1
-  flutter_svg: ^2.2.1
+  flutter_svg: ^2.2.3
   get: ^4.7.2
   intl: ^0.20.2
   image_picker: ^1.2.1
@@ -49,3 +49,4 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/icons/
