@@ -68,8 +68,7 @@ class ProfileScreen extends StatelessWidget {
             title: const Text('Logout'),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
-              // You might want to navigate to the login screen after logout
-              // Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+              Navigator.of(context).pop();
             },
           ),
         ],

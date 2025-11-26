@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:myapp/features/auth/login_screen.dart';
 import 'package:myapp/features/chat/chat_screen.dart';
 import 'package:myapp/features/chat/conversation_screen.dart';
 import 'package:myapp/features/dashboard/farmer_dashboard.dart';
@@ -12,6 +13,7 @@ import 'package:myapp/features/profile/profile_screen.dart';
 import 'package:myapp/models/equipment.dart';
 
 class AppRoutes {
+  static const String login = '/login';
   static const String farmerDashboard = '/';
   static const String categoryListing = '/category-listing';
   static const String equipmentDetail = '/equipment-detail';
@@ -23,6 +25,8 @@ class AppRoutes {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case farmerDashboard:
         return MaterialPageRoute(builder: (_) => const FarmerDashboard());
       case categoryListing:

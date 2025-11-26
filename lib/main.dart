@@ -1,20 +1,22 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/features/auth/login_screen.dart';
+import 'package:myapp/features/dashboard/farmer_dashboard.dart';
+import 'package:myapp/features/dashboard/owner_dashboard.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/utils/routes.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await updateDatabase();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -22,37 +24,6 @@ void main() async {
     ),
   );
 }
-Future<void> updateDatabase() async {
-  final firestore = FirebaseFirestore.instance;
-  final equipmentCollection = firestore.collection('equipment');
-
-  final equipmentSnapshot = await equipmentCollection.get();
-
-  for (final doc in equipmentSnapshot.docs) {
-    final data = doc.data();
-    final name = data['name'] as String;
-    String category;
-
-    if (name.toLowerCase().contains('tractor')) {
-      category = 'Tractors';
-    } else if (name.toLowerCase().contains('harvester')) {
-      category = 'Harvesters';
-    } else if (name.toLowerCase().contains('planter')) {
-      category = 'Planters';
-    } else if (name.toLowerCase().contains('sprayer')) {
-      category = 'Sprayers';
-    } else if (name.toLowerCase().contains('plow')) {
-      category = 'Plows';
-    } else {
-      category = 'Other'; // Default category
-    }
-
-    await doc.reference.update({'category': category});
-  }
-
-  print('Database update complete!');
-}
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -61,14 +32,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color primarySeedColor = Colors.green;
 
-    // Define a common TextTheme
     final TextTheme appTextTheme = TextTheme(
       displayLarge: GoogleFonts.oswald(fontSize: 57, fontWeight: FontWeight.bold),
       titleLarge: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.w500),
       bodyMedium: GoogleFonts.openSans(fontSize: 14),
     );
 
-    // Light Theme
     final ThemeData lightTheme = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
@@ -92,7 +61,6 @@ class MyApp extends StatelessWidget {
       ),
     );
 
-    // Dark Theme
     final ThemeData darkTheme = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
@@ -123,7 +91,34 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeProvider.themeMode,
-          initialRoute: AppRoutes.farmerDashboard,
+          home: StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasData) {
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance.collection('users').doc(snapshot.data!.uid).get(),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (userSnapshot.hasData) {
+                      final userRole = userSnapshot.data!['role'];
+                      if (userRole == 'Farmer') {
+                        return const FarmerDashboard();
+                      } else if (userRole == 'Owner') {
+                        return const OwnerDashboard();
+                      }
+                    }
+                    return const LoginScreen();
+                  },
+                );
+              }
+              return const LoginScreen();
+            },
+          ),
           onGenerateRoute: AppRoutes.generateRoute,
         );
       },
