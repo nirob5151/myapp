@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/providers/theme_provider.dart';
 import 'package:myapp/utils/routes.dart';
 import 'package:provider/provider.dart';
@@ -10,18 +11,30 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final user = FirebaseAuth.instance.currentUser;
+
+    String? displayName = user?.displayName ?? 'Guest';
+    String? email = user?.email ?? 'No email';
+    String? photoUrl = user?.photoURL;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: ListView(
         children: <Widget>[
-          const UserAccountsDrawerHeader(
-            accountName: Text('John Doe'),
-            accountEmail: Text('john.doe@example.com'),
+          UserAccountsDrawerHeader(
+            accountName: Text(displayName),
+            accountEmail: Text(email),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage('https://loremflickr.com/320/240/profile'),
+              backgroundImage: photoUrl != null
+                  ? NetworkImage(photoUrl)
+                  : const AssetImage('assets/images/placeholder.png') as ImageProvider,
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           ListTile(
@@ -38,13 +51,6 @@ class ProfileScreen extends StatelessWidget {
               // Navigate to settings screen
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: () {
-              // Handle logout
-            },
-          ),
           const Divider(),
           ListTile(
             leading: Icon(themeProvider.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode),
@@ -55,6 +61,16 @@ class ProfileScreen extends StatelessWidget {
             leading: const Icon(Icons.auto_mode),
             title: const Text('System Theme'),
             onTap: () => themeProvider.setSystemTheme(),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              // You might want to navigate to the login screen after logout
+              // Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+            },
           ),
         ],
       ),
