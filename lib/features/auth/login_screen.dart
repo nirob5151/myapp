@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +17,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _rememberMe = false;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -135,13 +142,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) =>
                           value!.isEmpty ? 'Please enter your password' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    CheckboxListTile(
+                      title: const Text('Remember Me'),
+                      value: _rememberMe,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _rememberMe = newValue!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(

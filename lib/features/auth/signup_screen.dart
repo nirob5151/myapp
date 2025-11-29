@@ -18,6 +18,13 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final _addressController = TextEditingController();
   String _role = 'Farmer';
+  bool _obscurePassword = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
@@ -83,8 +90,16 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: _togglePasswordVisibility,
+                  ),
+                ),
+                obscureText: _obscurePassword,
                 validator: (value) => value!.isEmpty ? 'Please enter your password' : null,
               ),
               TextFormField(
