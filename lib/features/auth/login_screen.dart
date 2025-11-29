@@ -157,15 +157,39 @@ class _LoginScreenState extends State<LoginScreen> {
                           value!.isEmpty ? 'Please enter your password' : null,
                     ),
                     const SizedBox(height: 16),
-                    CheckboxListTile(
-                      title: const Text('Remember Me'),
-                      value: _rememberMe,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _rememberMe = newValue!;
-                        });
-                      },
-                      controlAffinity: ListTileControlAffinity.leading,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _rememberMe = newValue!;
+                                });
+                              },
+                              activeColor: Colors.green.shade700,
+                            ),
+                            Text(
+                              'Remember Me',
+                              style: GoogleFonts.roboto(color: Colors.grey.shade700),
+                            ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Forgot password logic
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: GoogleFonts.roboto(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
@@ -269,18 +293,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ],
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        onPressed: () {
-                          // Forgot password logic
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: GoogleFonts.roboto(color: Colors.grey.shade700),
-                        ),
-                      ),
                     ),
                   ],
                 ),
