@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,27 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   String _selectedLanguage = 'English';
+  bool _obscureText = true;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserCredentials();
+  }
+
+  void _loadUserCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email');
+    final password = prefs.getString('password');
+    if (email != null && password != null) {
+      _emailController.text = email;
+      _passwordController.text = password;
+      setState(() {
+        _rememberMe = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -44,6 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('email', _emailController.text.trim());
+        await prefs.setString('password', _passwordController.text.trim());
+      } else {
+        await prefs.remove('email');
+        await prefs.remove('password');
+      }
 
       if (user == null && mounted) {
         setState(() {
@@ -95,6 +125,36 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _facebookSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final user = await authService.signInWithFacebook();
+
+      if (user == null && mounted) {
+        setState(() {
+          _errorMessage = 'Facebook Sign-In failed. Please try again.';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,12 +182,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildEmailField(),
                   const SizedBox(height: 20),
                   _buildPasswordField(),
-                  const SizedBox(height: 12),
-                  _buildForgotPasswordButton(),
+                  const SizedBox(height: 20),
+                  _buildRememberAndForget(),
                   const SizedBox(height: 30),
                   _buildLoginButton(),
-                  const SizedBox(height: 16),
-                  _buildGoogleSignInButton(),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'OR',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSocialLoginButtons(),
                   const SizedBox(height: 20),
                   _buildSignupButton(),
                   if (_errorMessage != null) ...[
@@ -144,6 +210,16 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialLoginButtons() {
+    return Column(
+      children: [
+        _buildGoogleSignInButton(),
+        const SizedBox(height: 12),
+        _buildFacebookSignInButton(),
+      ],
     );
   }
 
@@ -225,8 +301,18 @@ class _LoginScreenState extends State<LoginScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureText ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        ),
       ),
-      obscureText: true,
+      obscureText: _obscureText,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return _selectedLanguage == 'English'
@@ -238,16 +324,35 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildForgotPasswordButton() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        onPressed: () {},
-        child: Text(
-          _selectedLanguage == 'English' ? 'Forgot Password?' : 'পাসওয়ার্ড ভুলে গেছেন?',
-          style: TextStyle(color: Theme.of(context).primaryColor),
+  Widget _buildRememberAndForget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Checkbox(
+              value: _rememberMe,
+              onChanged: (bool? value) {
+                if (value != null) {
+                  setState(() {
+                    _rememberMe = value;
+                  });
+                }
+              },
+            ),
+            Text(_selectedLanguage == 'English' ? 'Remember Me' : 'আমাকে মনে রাখুন'),
+          ],
         ),
-      ),
+        TextButton(
+          onPressed: () {
+            // TODO: Implement forgot password functionality
+          },
+          child: Text(
+            _selectedLanguage == 'English' ? 'Forgot Password?' : 'পাসওয়ার্ড ভুলে গেছেন?',
+            style: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+        ),
+      ],
     );
   }
 
@@ -284,16 +389,41 @@ class _LoginScreenState extends State<LoginScreen> {
         style: GoogleFonts.poppins(
           fontSize: 16,
           fontWeight: FontWeight.w500,
+          color: Colors.black,
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF4CAF50),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.grey),
+        ),
+        elevation: 2,
+      ),
+    );
+  }
+
+  Widget _buildFacebookSignInButton() {
+    return ElevatedButton.icon(
+      onPressed: _facebookSignIn,
+      icon: SvgPicture.asset('assets/images/facebook_logo.svg', height: 24, width: 24),
+      label: Text(
+        _selectedLanguage == 'English' ? 'Continue with Facebook' : 'ফেসবুক দিয়ে চালিয়ে যান',
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF1877F2),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        elevation: 3,
+        elevation: 2,
       ),
     );
   }

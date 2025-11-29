@@ -1,7 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myapp/features/authentication/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +20,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscureText = true;
   bool _isLoading = false;
+  bool _rememberMe = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserCredentials();
+  }
+
+  void _loadUserCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email');
+    final password = prefs.getString('password');
+    if (email != null && password != null) {
+      _emailController.text = email;
+      _passwordController.text = password;
+      setState(() {
+        _rememberMe = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -37,21 +62,78 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.signInWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('email', _emailController.text.trim());
+        await prefs.setString('password', _passwordController.text.trim());
+      } else {
+        await prefs.remove('email');
+        await prefs.remove('password');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _googleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      final user = await authService.signInWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-      // Let the stream handle navigation
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.signInWithGoogle();
     } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _facebookSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.signInWithFacebook();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -90,8 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
-                      hintText: 'Email',
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      hintText: 'Email or Phone',
+                      prefixIcon: const Icon(Icons.person_outline),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -101,10 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
+                        return 'Please enter your email or phone';
                       }
                       return null;
                     },
@@ -136,15 +215,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 16),
+                  _buildRememberAndForget(),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B873E),
+                      backgroundColor: const Color(0xFF4CAF50),
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
+                      foregroundColor: Colors.white
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
@@ -153,20 +235,124 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                   ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => context.go('/register'),
-                    child: const Text(
-                      'Don\'t have an account? Sign Up',
-                      style: TextStyle(color: Color(0xFF3B873E)),
-                    ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'OR',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(height: 24),
+                  _buildSocialLoginButtons(),
+                   const SizedBox(height: 24),
+                  _buildSignupButton(),
+                   if (_errorMessage != null) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red, fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRememberAndForget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Checkbox(
+              value: _rememberMe,
+              onChanged: (bool? value) {
+                if (value != null) {
+                  setState(() {
+                    _rememberMe = value;
+                  });
+                }
+              },
+            ),
+            const Text('Remember Me'),
+          ],
+        ),
+        TextButton(
+          onPressed: () {
+            // TODO: Implement forgot password functionality
+          },
+          child: Text(
+            'Forgot Password?',
+            style: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialLoginButtons() {
+    return Column(
+      children: [
+        ElevatedButton.icon(
+          onPressed: _isLoading ? null : _googleSignIn,
+          icon: SvgPicture.asset('assets/images/google_logo.svg', height: 24, width: 24),
+          label: const Text(
+            'Sign in with Google',
+            style: TextStyle(color: Colors.black)
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              side: const BorderSide(color: Colors.grey),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          onPressed: _isLoading ? null : _facebookSignIn,
+          icon: SvgPicture.asset('assets/images/facebook_logo.svg', height: 24, width: 24),
+          label: const Text('Sign in with Facebook'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF1877F2),
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+   Widget _buildSignupButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Don't have an account?",
+          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+        ),
+        TextButton(
+          onPressed: () {
+            context.go('/signup');
+          },
+          child: Text(
+            "Sign Up",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

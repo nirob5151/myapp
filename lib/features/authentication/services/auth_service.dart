@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -127,6 +128,36 @@ class AuthService {
     }
   }
 
+  //Sign in with Facebook
+  Future<User?> signInWithFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final AccessToken accessToken = result.accessToken!;
+        final AuthCredential credential = FacebookAuthProvider.credential(accessToken.tokenString);
+        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+        final User? user = userCredential.user;
+
+        if (user != null) {
+          // Check if the user is new
+          final DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+          if (!doc.exists) {
+            // New user, create document
+            final country = await _getCountry();
+            await _createUserDocument(user, user.displayName ?? '', user.email ?? '', 'customer', country);
+          }
+        }
+        return user;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
   // Password Reset
   Future<void> sendPasswordResetEmail(String email) async {
     try {
@@ -145,6 +176,7 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     await _googleSignIn.signOut();
+    await FacebookAuth.instance.logOut();
     await _auth.signOut();
   }
 

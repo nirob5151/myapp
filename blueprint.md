@@ -1,5 +1,4 @@
-
-# Project Overview
+n# Project Overview
 
 Krishi Bazaar is a Flutter application that allows farmers to rent agricultural equipment. The app connects equipment owners with farmers who need to rent equipment for their farming activities. The app provides a platform for browsing, booking, and managing equipment rentals.
 
@@ -18,16 +17,9 @@ Krishi Bazaar is a Flutter application that allows farmers to rent agricultural 
 *   **Theme Toggle:** A feature that allows users to switch between light and dark modes, and also to set the theme to follow the system settings.
 *   **Modern UI:** The application has been updated with a more modern and visually appealing design, including a bottom navigation bar, horizontally scrolling category cards, and improved styling for the equipment listing and detail screens.
 *   **Date and Time Pickers:** The booking screen now includes date and time pickers to allow users to select the start and end dates and times for their bookings.
+*   **Login Screen with Social Media Buttons:** The login screen has been updated to include Google and Facebook login buttons, which are now displayed in a row for a cleaner and more user-friendly interface.
 
 # Plan for Current Changes
 
-*   **Create a centralized routing system:** Create a `routes.dart` file to centralize all the routing logic in the app. This will make the navigation more organized and easier to manage.
-*   **Update the navigation logic:** Update the navigation logic in all the relevant files to use the new centralized routing system. This will make the navigation more consistent and easier to maintain.
-*   **Create a Not Found screen:** Create a screen that is displayed when a user tries to navigate to a route that does not exist. This will improve the user experience by providing a clear message instead of a generic error.
-*   **Make equipment cards tappable:** Make the equipment cards on the `CategoryListingScreen` tappable so that tapping on a card will navigate the user to the `EquipmentDetailScreen` for that specific piece of equipment.
-*   **Add a theme provider:** Create a `ThemeProvider` to manage the application's theme. This will allow for easy switching between light and dark modes.
-*   **Implement light and dark themes:** Define light and dark themes for the application using the `google_fonts` package and `ColorScheme.fromSeed`.
-*   **Add a theme toggle:** Add a theme toggle button to the `ProfileScreen` to allow users to switch between light and dark modes.
-*   **Modernize the UI:** Update the UI of the `FarmerDashboard`, `CategoryListingScreen`, and `EquipmentDetailScreen` to have a more modern and visually appealing design.
-*   **Add a bottom navigation bar:** Add a bottom navigation bar to the `FarmerDashboard` to provide easy access to the main sections of the app.
-*   **Add date and time pickers:** Add date and time pickers to the `BookingScreen` to allow users to select the start and end dates and times for their bookings.
+*   **Arrange social media login buttons:** The social media login buttons on the login screen were arranged in a column. I have rearranged them to be in a row to improve the user interface.
+*   **Add social media logos:** I have added the Google and Facebook logos to the `assets/images` directory and declared them in the `pubspec.yaml` file so they can be used in the application.
