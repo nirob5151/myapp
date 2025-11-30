@@ -1,21 +1,41 @@
 
 import 'package:flutter/material.dart';
+import 'package:myapp/src/map_screen.dart';
 import 'package:myapp/utils/routes.dart';
 
-class FarmerDashboard extends StatelessWidget {
+class FarmerDashboard extends StatefulWidget {
   const FarmerDashboard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> categories = [
-      {'name': 'Tractors', 'icon': Icons.agriculture},
-      {'name': 'Harvesters', 'icon': Icons.grain},
-      {'name': 'Pumps', 'icon': Icons.opacity},
-      {'name': 'Sprayers', 'icon': Icons.eco},
-      {'name': 'Accessories', 'icon': Icons.settings},
-      {'name': 'Torvex', 'icon': Icons.more_horiz},
-    ];
+  State<FarmerDashboard> createState() => _FarmerDashboardState();
+}
 
+class _FarmerDashboardState extends State<FarmerDashboard> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _widgetOptions = <Widget>[
+    const FarmerHome(),
+    const MapScreen(),
+    const Center(child: Text('My Rentals')),
+    const Center(child: Text('Chat')),
+    const Center(child: Text('Profile')),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 2) {
+      Navigator.pushNamed(context, AppRoutes.bookingHistory);
+    } else if (index == 3) {
+      Navigator.pushNamed(context, AppRoutes.chat);
+    } else if (index == 4) {
+      Navigator.pushNamed(context, AppRoutes.profile);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: RichText(
@@ -41,108 +61,16 @@ class FarmerDashboard extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'tractors, harvesters, pumps...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                'Categories',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.2,
-              ),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.categoryListing,
-                      arguments: category['name'],
-                    );
-                  },
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(category['icon'],
-                            size: 40, color: Theme.of(context).primaryColor),
-                        const SizedBox(height: 5),
-                        Text(
-                          category['name'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Text(
-                'Featured Ads',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            // Placeholder for Featured Ads
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListTile(
-                leading: Image.network(
-                  'https://loremflickr.com/100/100/tractor',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-                title: const Text('Tractor for Rent'),
-                subtitle: const Text('৳ 5000/day'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book_online),
@@ -157,18 +85,123 @@ class FarmerDashboard extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.pushNamed(context, AppRoutes.bookingHistory);
-          } else if (index == 2) {
-            Navigator.pushNamed(context, AppRoutes.chat);
-          } else if (index == 3) {
-            Navigator.pushNamed(context, AppRoutes.profile);
-          }
-        },
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class FarmerHome extends StatelessWidget {
+  const FarmerHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> categories = [
+      {'name': 'Tractors', 'icon': Icons.agriculture},
+      {'name': 'Harvesters', 'icon': Icons.grain},
+      {'name': 'Pumps', 'icon': Icons.opacity},
+      {'name': 'Sprayers', 'icon': Icons.eco},
+      {'name': 'Accessories', 'icon': Icons.settings},
+      {'name': 'Torvex', 'icon': Icons.more_horiz},
+    ];
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'tractors, harvesters, pumps...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              'Categories',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.2,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.categoryListing,
+                    arguments: category['name'],
+                  );
+                },
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(category['icon'],
+                          size: 40, color: Theme.of(context).primaryColor),
+                      const SizedBox(height: 5),
+                      Text(
+                        category['name'],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: Text(
+              'Featured Ads',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          // Placeholder for Featured Ads
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              leading: Image.network(
+                'https://loremflickr.com/100/100/tractor',
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+              title: const Text('Tractor for Rent'),
+              subtitle: const Text('\u09f3 5000/day'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+            ),
+          ),
+        ],
       ),
     );
   }
