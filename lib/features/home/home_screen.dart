@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myapp/models/equipment.dart';
+import 'package:myapp/features/equipment/models/equipment.dart';
 import 'package:myapp/utils/routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,9 +22,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Krishi Bazar'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.profile);
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.book_online),
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.myBookings);
+              Navigator.pushNamed(context, AppRoutes.bookingHistory);
             },
           ),
         ],
@@ -66,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           final equipmentList = snapshot.data!.docs
-              .map((doc) => Equipment.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+              .map((doc) => Equipment.fromSnap(doc))
               .toList();
 
           return GridView.builder(
@@ -120,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (_searchQuery.isNotEmpty) {
-      query = query.where('name', isGreaterThanOrEqualTo: _searchQuery).where('name', isLessThanOrEqualTo: '$_searchQuery\uf8ff');
+      query = query.where('name_lowercase', isGreaterThanOrEqualTo: _searchQuery.toLowerCase()).where('name_lowercase', isLessThanOrEqualTo: '$_searchQuery\uf8ff'.toLowerCase());
     }
 
     return query;
@@ -162,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               child: Text(
-                '৳${equipment.price}',
+                '৳${equipment.rentalPrice}',
                 style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ),

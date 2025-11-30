@@ -14,6 +14,7 @@ class Equipment {
   final String division;
   final String location;
   final String availability;
+  final String name_lowercase;
 
   Equipment({
     required this.id,
@@ -29,6 +30,7 @@ class Equipment {
     required this.division,
     required this.location,
     required this.availability,
+    required this.name_lowercase,
   });
 
   factory Equipment.fromSnap(DocumentSnapshot doc) {
@@ -49,6 +51,7 @@ class Equipment {
       division: data['division'] ?? '',
       location: data['location'] ?? '',
       availability: data['availability'] ?? '',
+      name_lowercase: data['name_lowercase'] ?? '',
     );
   }
 
@@ -67,6 +70,7 @@ class Equipment {
       'division': division,
       'location': location,
       'availability': availability,
+      'name_lowercase': name.toLowerCase(),
     };
   }
 
@@ -84,6 +88,7 @@ class Equipment {
     String? division,
     String? location,
     String? availability,
+    String? name_lowercase,
   }) {
     return Equipment(
       id: id ?? this.id,
@@ -99,6 +104,7 @@ class Equipment {
       division: division ?? this.division,
       location: location ?? this.location,
       availability: availability ?? this.availability,
+      name_lowercase: name_lowercase ?? this.name_lowercase,
     );
   }
 }

@@ -33,15 +33,19 @@ class EquipmentService {
 
   // Add a new piece of equipment
   Future<DocumentReference> addEquipment(Equipment equipment) {
-    return _firestore.collection('equipment').add(equipment.toFirestore());
+    final newEquipment = equipment.toFirestore();
+    newEquipment['name_lowercase'] = equipment.name.toLowerCase();
+    return _firestore.collection('equipment').add(newEquipment);
   }
 
   // Update an existing piece of equipment
   Future<void> updateEquipment(Equipment equipment) {
+    final updatedEquipment = equipment.toFirestore();
+    updatedEquipment['name_lowercase'] = equipment.name.toLowerCase();
     return _firestore
         .collection('equipment')
         .doc(equipment.id)
-        .update(equipment.toFirestore());
+        .update(updatedEquipment);
   }
 
   // Delete a piece of equipment
